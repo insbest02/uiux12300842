@@ -1,8 +1,11 @@
 /* =========================================
-   Amor AI - 3주차 CSS
-   글자 크기 / 색상 / 배경색 / 여백 / 테두리로
-   제목, 본문, 영역별 정보를 시각적으로 구분
+   Amor AI - 3주차 CSS + 4주차 반응형
    ========================================= */
+
+/* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
+* {
+    box-sizing: border-box;
+}
 
 /* 기본 설정: 전체 글꼴, 글자색, 배경색, 여백 */
 body {
@@ -19,6 +22,7 @@ body {
 nav {
     position: sticky;
     top: 0;
+    z-index: 10;
     padding: 16px 24px;
     text-align: center;
     background-color: #ffffff;
@@ -39,9 +43,11 @@ nav a:hover {
     text-decoration: underline;
 }
 
-/* 각 영역(section)을 카드처럼: 흰 배경 + 테두리 + 여백 */
+/* 각 영역(section)을 카드처럼
+   4주차: width(유동 너비) + max-width(최대 너비) 적용 */
 section {
-    max-width: 720px;
+    width: 90%;
+    max-width: 900px;
     margin: 32px auto;
     padding: 28px 32px;
     background-color: #ffffff;
@@ -80,25 +86,43 @@ p {
     font-size: 16px;
 }
 
-/* 주요 기능 / 이용 방법 목록 */
-ul,
+/* 이용 방법 목록 */
 ol {
     margin: 0;
     padding-left: 24px;
 }
 
-li {
+ol li {
     margin-bottom: 10px;
     padding: 10px 14px;
     background-color: #fff0f3;
     border-radius: 8px;
 }
 
-/* 이미지: 크기 제한 + 가운데 정렬 */
+/* 4주차: 기능 카드 목록을 CSS Grid로 구성 (PC에서 3열) */
+#features ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#features li {
+    padding: 24px 16px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #fff0f3;
+    border: 1px solid #f8d0da;
+    border-radius: 10px;
+}
+
+/* 이미지: 유동 너비 + 최대 너비 + 가운데 정렬 */
 img {
     display: block;
-    max-width: 300px;
     width: 100%;
+    max-width: 300px;
     height: auto;
     margin: 0 auto;
     border-radius: 12px;
@@ -144,4 +168,77 @@ button {
 
 button:hover {
     background-color: #a61e4d;
+}
+
+/* =========================================
+   4주차: 768px 이하 (태블릿·모바일)
+   ========================================= */
+@media (max-width: 768px) {
+
+    /* 내비게이션을 세로로 배치 (구분선 | 글자는 숨김) */
+    nav {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 16px;
+        font-size: 0;
+    }
+
+    nav a {
+        display: block;
+        margin: 0;
+        padding: 8px 0;
+        font-size: 15px;
+    }
+
+    /* 모바일 여백 줄이기 */
+    section {
+        width: auto;
+        margin: 16px;
+        padding: 20px 16px;
+    }
+
+    /* 모바일 글자 크기 조정 */
+    h1 {
+        font-size: 30px;
+    }
+
+    h1 + p {
+        font-size: 16px;
+    }
+
+    h3 {
+        font-size: 19px;
+    }
+
+    p,
+    li {
+        font-size: 15px;
+    }
+
+    /* 기능 카드를 한 열로 배치 */
+    #features ul {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* 이메일 입력창과 버튼을 세로로 배치 */
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    label {
+        margin-bottom: 0;
+    }
+
+    input {
+        width: 100%;
+        max-width: none;
+    }
+
+    button {
+        width: 100%;
+        margin-left: 0;
+    }
 }
