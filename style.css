@@ -110,6 +110,7 @@ ol li {
 }
 
 #features li {
+    word-break: keep-all;
     padding: 24px 16px;
     text-align: center;
     font-weight: bold;
@@ -197,7 +198,7 @@ button:hover {
         margin: 16px;
         padding: 20px 16px;
     }
-
+    
     /* 모바일 글자 크기 조정 */
     h1 {
         font-size: 30px;
