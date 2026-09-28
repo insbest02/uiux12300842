@@ -177,6 +177,7 @@ button:hover {
 
     /* 내비게이션을 세로로 배치 (구분선 | 글자는 숨김) */
     nav {
+        position: static;
         display: flex;
         flex-direction: column;
         padding: 8px 16px;
