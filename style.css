@@ -1,0 +1,147 @@
+/* =========================================
+   Amor AI - 3주차 CSS
+   글자 크기 / 색상 / 배경색 / 여백 / 테두리로
+   제목, 본문, 영역별 정보를 시각적으로 구분
+   ========================================= */
+
+/* 기본 설정: 전체 글꼴, 글자색, 배경색, 여백 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333333;
+    background-color: #fff5f7;
+}
+
+/* 상단 메뉴: 배경색 + 아래 테두리로 영역 구분 */
+nav {
+    position: sticky;
+    top: 0;
+    padding: 16px 24px;
+    text-align: center;
+    background-color: #ffffff;
+    border-bottom: 2px solid #f4a6b8;
+    color: #cccccc;
+}
+
+nav a {
+    margin: 0 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #d6336c;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #a61e4d;
+    text-decoration: underline;
+}
+
+/* 각 영역(section)을 카드처럼: 흰 배경 + 테두리 + 여백 */
+section {
+    max-width: 720px;
+    margin: 32px auto;
+    padding: 28px 32px;
+    background-color: #ffffff;
+    border: 1px solid #f8d0da;
+    border-radius: 12px;
+}
+
+/* 서비스 이름: 가장 큰 글자 + 강조 색상 */
+h1 {
+    margin: 0 0 8px;
+    font-size: 40px;
+    color: #d6336c;
+    text-align: center;
+}
+
+/* h1 바로 아래 한 줄 소개 */
+h1 + p {
+    margin: 0 0 24px;
+    font-size: 18px;
+    color: #868e96;
+    text-align: center;
+}
+
+/* 영역 제목: 중간 크기 + 왼쪽 테두리로 제목임을 표시 */
+h3 {
+    margin: 0 0 16px;
+    padding-left: 12px;
+    font-size: 22px;
+    color: #222222;
+    border-left: 5px solid #f06595;
+}
+
+/* 본문 */
+p {
+    margin: 0 0 12px;
+    font-size: 16px;
+}
+
+/* 주요 기능 / 이용 방법 목록 */
+ul,
+ol {
+    margin: 0;
+    padding-left: 24px;
+}
+
+li {
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    background-color: #fff0f3;
+    border-radius: 8px;
+}
+
+/* 이미지: 크기 제한 + 가운데 정렬 */
+img {
+    display: block;
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+/* 가입 영역: 배경색을 달리해 핵심 행동 강조 */
+#signup {
+    background-color: #ffe3ea;
+    border: 2px solid #f06595;
+    text-align: center;
+}
+
+#signup h3 {
+    display: inline-block;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input {
+    width: 60%;
+    max-width: 320px;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #f4a6b8;
+    border-radius: 6px;
+}
+
+button {
+    margin-left: 6px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #d6336c;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #a61e4d;
+}
