@@ -244,3 +244,26 @@ button:hover {
         margin-left: 0;
     }
 }
+/* 5주차: 안내 문구 스타일 */
+.message {
+    margin: 14px 0 0;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.message.error {
+    color: #e03131;
+}
+
+.message.success {
+    padding: 12px;
+    color: #2b8a3e;
+    background-color: #ebfbee;
+    border-radius: 8px;
+}
+
+/* 5주차: 신청 완료 후 버튼 상태 */
+button:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
