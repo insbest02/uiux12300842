@@ -1,5 +1,6 @@
 /* =========================================
-   Amor AI - 3주차 CSS + 4주차 반응형
+   Amor AI - CSS
+   3주차 디자인 / 4주차 반응형 / 5·6주차 기능 스타일
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -43,8 +44,7 @@ nav a:hover {
     text-decoration: underline;
 }
 
-/* 각 영역(section)을 카드처럼
-   4주차: width(유동 너비) + max-width(최대 너비) 적용 */
+/* 각 영역(section)을 카드처럼 - 유동 너비 + 최대 너비 */
 section {
     width: 90%;
     max-width: 900px;
@@ -55,7 +55,7 @@ section {
     border-radius: 12px;
 }
 
-/* 서비스 이름: 가장 큰 글자 + 강조 색상 */
+/* 서비스 이름 */
 h1 {
     margin: 0 0 8px;
     font-size: 40px;
@@ -71,7 +71,7 @@ h1 + p {
     text-align: center;
 }
 
-/* 영역 제목: 중간 크기 + 왼쪽 테두리로 제목임을 표시 */
+/* 영역 제목 */
 h3 {
     margin: 0 0 16px;
     padding-left: 12px;
@@ -99,7 +99,7 @@ ol li {
     border-radius: 8px;
 }
 
-/* 4주차: 기능 카드 목록을 CSS Grid로 구성 (PC에서 3열) */
+/* 4주차: 기능 카드 목록을 CSS Grid로 구성 */
 #features ul {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -119,7 +119,7 @@ ol li {
     border-radius: 10px;
 }
 
-/* 이미지: 유동 너비 + 최대 너비 + 가운데 정렬 */
+/* 이미지 */
 img {
     display: block;
     width: 100%;
@@ -129,7 +129,7 @@ img {
     border-radius: 12px;
 }
 
-/* 가입 영역: 배경색을 달리해 핵심 행동 강조 */
+/* 가입 영역 */
 #signup {
     background-color: #ffe3ea;
     border: 2px solid #f06595;
@@ -172,11 +172,153 @@ button:hover {
 }
 
 /* =========================================
+   5·6주차: 이메일 안내 문구 / 입력칸 / 버튼 상태
+   ========================================= */
+.message {
+    margin: 14px 0 0;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.message.hint {
+    color: #868e96;
+    font-weight: normal;
+}
+
+.message.error {
+    color: #e03131;
+}
+
+.message.ok {
+    color: #2b8a3e;
+}
+
+.message.success {
+    padding: 12px;
+    color: #2b8a3e;
+    background-color: #ebfbee;
+    border-radius: 8px;
+}
+
+input.invalid {
+    border: 2px solid #e03131;
+    outline: none;
+}
+
+input.valid {
+    border: 2px solid #2f9e44;
+    outline: none;
+}
+
+button:disabled,
+button:disabled:hover {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   6주차: 탭 UI
+   ========================================= */
+.tab-list {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f8d0da;
+}
+
+.tab-button {
+    flex: 1;
+    margin: 0;
+    padding: 12px 8px;
+    font-size: 15px;
+    color: #868e96;
+    background-color: transparent;
+    border-bottom: 3px solid transparent;
+    border-radius: 8px 8px 0 0;
+}
+
+.tab-button:hover {
+    color: #d6336c;
+    background-color: #fff0f3;
+}
+
+/* 선택된 탭 */
+.tab-button.active {
+    color: #d6336c;
+    background-color: #fff0f3;
+    border-bottom: 3px solid #d6336c;
+}
+
+/* 선택된 탭의 내용만 보이기 */
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.tab-panel ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.tab-panel li {
+    margin-bottom: 8px;
+}
+
+.report {
+    padding: 14px 16px;
+    background-color: #fff0f3;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* 6주차: 상황 선택 (change) */
+select {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #f4a6b8;
+    border-radius: 6px;
+    background-color: #ffffff;
+}
+
+.reply-box {
+    margin-top: 14px;
+    padding: 14px 16px;
+    color: #868e96;
+    background-color: #f8f9fa;
+    border-left: 5px solid #ced4da;
+    border-radius: 8px;
+    word-break: keep-all;
+}
+
+.reply-box.some {
+    color: #862e9c;
+    background-color: #f8f0fc;
+    border-left-color: #be4bdb;
+}
+
+.reply-box.dating {
+    color: #a61e4d;
+    background-color: #fff0f6;
+    border-left-color: #f06595;
+}
+
+.reply-box.fight {
+    color: #1864ab;
+    background-color: #e7f5ff;
+    border-left-color: #4dabf7;
+}
+
+/* =========================================
    4주차: 768px 이하 (태블릿·모바일)
    ========================================= */
 @media (max-width: 768px) {
 
-    /* 내비게이션을 세로로 배치 (구분선 | 글자는 숨김) */
+    /* 내비게이션 세로 배치 + 모바일에서는 고정 해제 */
     nav {
         position: static;
         display: flex;
@@ -192,14 +334,12 @@ button:hover {
         font-size: 15px;
     }
 
-    /* 모바일 여백 줄이기 */
     section {
         width: auto;
         margin: 16px;
         padding: 20px 16px;
     }
-    
-    /* 모바일 글자 크기 조정 */
+
     h1 {
         font-size: 30px;
     }
@@ -217,13 +357,11 @@ button:hover {
         font-size: 15px;
     }
 
-    /* 기능 카드를 한 열로 배치 */
     #features ul {
         grid-template-columns: 1fr;
         gap: 12px;
     }
 
-    /* 이메일 입력창과 버튼을 세로로 배치 */
     form {
         display: flex;
         flex-direction: column;
@@ -243,27 +381,15 @@ button:hover {
         width: 100%;
         margin-left: 0;
     }
-}
-/* 5주차: 안내 문구 스타일 */
-.message {
-    margin: 14px 0 0;
-    font-size: 15px;
-    font-weight: bold;
-}
 
-.message.error {
-    color: #e03131;
-}
+    /* 6주차: 탭 버튼은 모바일에서도 가로 3칸 유지 */
+    .tab-button {
+        width: auto;
+        padding: 10px 4px;
+        font-size: 14px;
+    }
 
-.message.success {
-    padding: 12px;
-    color: #2b8a3e;
-    background-color: #ebfbee;
-    border-radius: 8px;
-}
-
-/* 5주차: 신청 완료 후 버튼 상태 */
-button:disabled {
-    background-color: #adb5bd;
-    cursor: not-allowed;
+    select {
+        max-width: none;
+    }
 }
