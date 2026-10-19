@@ -12,9 +12,9 @@
 
     <!--
         주요 사용자: 연애 상담이나 대화 조언이 필요한 20~30대
-        페이지 목적: Amor AI가 어떤 서비스인지 소개하고, 이메일 등록을 통해 가입을 유도하는 것
-        핵심 행동: 이메일을 입력하고 가입 신청하기
-        정보 순서: 서비스 소개 -> 서비스 설명 -> 주요 기능 -> 이용 방법 -> 가입 입력 영역
+        페이지 목적: Amor AI가 어떤 서비스인지 소개하고, 답장 상담을 직접 체험하게 하는 것
+        핵심 행동: 고민을 입력해 추천 답장을 받고, 보관함에 저장해 다시 꺼내 쓰기
+        정보 순서: 서비스 소개 -> 주요 기능 -> 기능 자세히 보기 -> AI 답장 상담 -> 내 답장 보관함 -> 이용 방법 -> 가입
         이동 흐름: 상단 메뉴 클릭 시 같은 페이지 내 해당 섹션으로 스크롤 이동
     -->
 
@@ -22,9 +22,10 @@
     <nav>
         <a href="#about">서비스 소개</a> |
         <a href="#features">주요 기능</a> |
+        <a href="#consult">AI 상담</a> |
+        <a href="#saved">보관함</a> |
         <a href="#howto">이용 방법</a> |
         <a href="#signup">가입하기</a>
-        <a href="#consult">AI 상담</a> |
     </nav>
 
     <!-- 서비스 이름 및 한 줄 소개 -->
@@ -46,7 +47,8 @@
             <li>관계 개선을 위한 AI 코칭 팁 제공</li>
         </ul>
     </section>
-        <!-- 6주차: 기능 탭 -->
+
+    <!-- 6주차: 기능 탭 -->
     <section id="tabs">
         <h3>기능 자세히 보기</h3>
 
@@ -83,13 +85,13 @@
         </div>
     </section>
 
-        <!--
+    <!--
         7주차: AI 답장 상담 흐름
         주요 사용자: 상대에게 보낼 답장이 고민되는 20~30대
         사용자 목표: 내 상황에 맞는 답장 문장을 추천받는 것
         핵심 행동: 고민을 입력하고 관계 상황·답장 톤을 골라 추천 받기
         완료 조건: 완료 화면에 닉네임과 추천 답장이 표시되면 완료
-        흐름: 시작 -> 입력 -> 선택 -> 확인 -> 완료
+        흐름: 시작 -> 입력 -> 선택 -> 확인 -> 완료 (-> 중간고사: 보관함에 저장)
     -->
     <section id="consult">
         <h3>AI 답장 상담</h3>
@@ -174,18 +176,83 @@
             </div>
         </div>
 
-        <!-- ⑤ 완료 -->
+        <!-- ⑤ 완료 + 중간고사: 보관함에 저장 -->
         <div class="step-panel" data-step="5">
             <span class="done-badge">✅ 상담 완료</span>
             <p class="step-title" id="result-title"></p>
             <p class="result-reply" id="result-reply"></p>
             <p class="result-meta" id="result-meta"></p>
+
+            <div class="save-box">
+                <label for="save-memo">메모 (선택, 20자 이내)</label>
+                <input type="text" id="save-memo" placeholder="예) 내일 아침에 보내기">
+                <p class="field-error" id="memo-error"></p>
+                <p class="save-feedback" id="save-feedback"></p>
+            </div>
+
             <div class="step-actions">
-                <button type="button" id="btn-restart">다시 상담하기</button>
+                <button type="button" class="secondary" id="btn-restart">다시 상담하기</button>
+                <button type="button" id="btn-save">보관함에 저장</button>
             </div>
         </div>
     </section>
 
+    <!--
+        중간고사: 내 답장 보관함
+        사용자 목표: 추천받은 답장을 모아 두고, 보낼 때 다시 찾아 쓰는 것
+        핵심 행동: 저장한 답장을 키워드·관계 상황으로 찾아 열기, 다시 상담, 삭제
+        흐름: 7주차 완료 화면에서 저장 -> 보관함 목록 -> 찾기 -> 열기 -> 다시 상담 또는 삭제(되돌리기)
+    -->
+    <section id="saved">
+        <h3>내 답장 보관함</h3>
+        <p class="step-desc">상담에서 받은 답장을 저장해 두고, 보낼 때 찾아서 다시 열어 보세요.</p>
+
+        <div class="saved-tools">
+            <div class="saved-tool">
+                <label for="saved-search">키워드로 찾기</label>
+                <input type="text" id="saved-search" placeholder="메모·고민·답장 내용 검색">
+            </div>
+            <div class="saved-tool">
+                <label for="saved-filter">관계 상황</label>
+                <select id="saved-filter">
+                    <option value="all">전체</option>
+                    <option value="some">썸 타는 중</option>
+                    <option value="dating">연애 중</option>
+                    <option value="fight">다툰 후</option>
+                </select>
+            </div>
+        </div>
+
+        <p class="saved-count" id="saved-count"></p>
+
+        <div class="undo-bar" id="undo-bar" hidden>
+            <span id="undo-text"></span>
+            <button type="button" class="secondary" id="btn-undo">되돌리기</button>
+        </div>
+
+        <div class="saved-detail" id="saved-detail" hidden>
+            <p class="saved-detail-label">열어 본 답장</p>
+            <p class="step-title" id="detail-memo"></p>
+            <p class="saved-meta" id="detail-meta"></p>
+            <dl class="summary">
+                <div><dt>닉네임</dt><dd id="detail-nickname"></dd></div>
+                <div><dt>고민</dt><dd id="detail-concern"></dd></div>
+            </dl>
+            <p class="result-reply" id="detail-reply"></p>
+            <div class="step-actions">
+                <button type="button" class="secondary" id="btn-detail-close">닫기</button>
+                <button type="button" class="danger" id="btn-detail-delete">삭제</button>
+                <button type="button" id="btn-detail-reuse">이 내용으로 다시 상담</button>
+            </div>
+        </div>
+
+        <div class="saved-empty" id="saved-empty" hidden>
+            <p id="saved-empty-text"></p>
+            <button type="button" class="secondary" id="saved-empty-action"></button>
+        </div>
+
+        <ul class="saved-list" id="saved-list"></ul>
+    </section>
 
     <!-- 이용 방법 3단계 -->
     <section id="howto">
@@ -210,8 +277,9 @@
             <input type="email" id="email" name="email" placeholder="example@email.com">
             <button type="submit">가입 신청</button>
         </form>
-         <p id="signup-message"></p>
+        <p id="signup-message"></p>
     </section>
+
     <script src="script.js"></script>
 </body>
 

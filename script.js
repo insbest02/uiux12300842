@@ -4,6 +4,7 @@
 // 6주차: 탭 전환 (click), 실시간 이메일 검사 (input),
 //        상황별 추천 답장 (change)
 // 7주차: AI 답장 상담 흐름 (시작 → 입력 → 선택 → 확인 → 완료)
+// 중간고사: 내 답장 보관함 (저장 → 찾기 → 열기·다시 상담 → 삭제·되돌리기)
 // =========================================
 
 
@@ -268,6 +269,20 @@ function showResult() {
     document.querySelector("#result-reply").textContent = "\"" + consultReplies[relation][tone] + "\"";
     document.querySelector("#result-meta").textContent =
         relationLabels[relation] + " · " + toneLabels[tone];
+
+    // 중간고사: 보관함에 저장할 현재 결과 기억
+    currentResult = {
+        nickname: nicknameInput.value.trim(),
+        concern: concernInput.value.trim(),
+        relation: relation,
+        tone: tone,
+        reply: consultReplies[relation][tone]
+    };
+    resetSaveState();
+    if (isSaved(currentResult)) {
+        syncSaveButton();
+        showSaveFeedback("이미 보관함에 저장된 답장이에요. 아래 보관함에서 확인할 수 있어요.", "warn");
+    }
 }
 
 // 고민 글자 수 실시간 표시
@@ -288,6 +303,8 @@ function resetConsult() {
     clearError(null, relationError);
     clearError(toneSelect, toneError);
     updateConcernCount();
+    currentResult = null;   // 중간고사: 저장 상태도 초기화 (보관함 목록은 유지)
+    resetSaveState();
     goToStep(1);
 }
 
@@ -349,3 +366,331 @@ toneSelect.addEventListener("change", function () {
 
 updateConcernCount();
 goToStep(1);
+
+
+
+// -----------------------------------------
+// 중간고사: 내 답장 보관함
+// 완료한 추천 답장을 저장 → 키워드·상황으로 찾기 → 열기·다시 상담 → 삭제·되돌리기
+// -----------------------------------------
+const MAX_MEMO = 20;
+const STORAGE_KEY = "amor-saved-replies";
+
+const memoInput = document.querySelector("#save-memo");
+const memoError = document.querySelector("#memo-error");
+const saveButton = document.querySelector("#btn-save");
+const saveFeedback = document.querySelector("#save-feedback");
+
+const savedCount = document.querySelector("#saved-count");
+const savedSearch = document.querySelector("#saved-search");
+const savedFilter = document.querySelector("#saved-filter");
+const savedList = document.querySelector("#saved-list");
+const savedEmpty = document.querySelector("#saved-empty");
+const savedEmptyText = document.querySelector("#saved-empty-text");
+const savedEmptyAction = document.querySelector("#saved-empty-action");
+const savedDetail = document.querySelector("#saved-detail");
+const undoBar = document.querySelector("#undo-bar");
+const undoText = document.querySelector("#undo-text");
+
+let currentResult = null;        // 완료 화면에 보이는 결과
+let savedReplies = loadSaved();  // 보관함 목록
+let openedId = null;             // 지금 열어 본 항목
+let lastDeleted = null;          // 되돌리기용 { item, index }
+
+// 새로고침해도 목록이 남도록 브라우저에 저장 (실패해도 페이지는 동작)
+function loadSaved() {
+    try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return Array.isArray(data) ? data : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function persistSaved() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(savedReplies));
+    } catch (e) {
+        // 저장소를 쓸 수 없는 환경이면 이번 방문 동안만 유지
+    }
+}
+
+function findSaved(id) {
+    return savedReplies.find(function (item) { return item.id === id; });
+}
+
+function isSaved(result) {
+    return savedReplies.some(function (item) {
+        return item.reply === result.reply && item.concern === result.concern;
+    });
+}
+
+function formatDate(time) {
+    const d = new Date(time);
+    const pad = function (n) { return String(n).padStart(2, "0"); };
+    return (d.getMonth() + 1) + "월 " + d.getDate() + "일 " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+// ---- 완료 화면: 저장 ----
+function showSaveFeedback(text, type) {
+    saveFeedback.textContent = text;
+    saveFeedback.className = "save-feedback " + type;
+}
+
+function resetSaveState() {
+    memoInput.value = "";
+    memoInput.disabled = false;
+    clearError(memoInput, memoError);
+    saveFeedback.textContent = "";
+    saveFeedback.className = "save-feedback";
+    saveButton.textContent = "보관함에 저장";
+    saveButton.disabled = false;
+}
+
+// 보관함 상태에 맞춰 저장 버튼 상태 맞추기 (삭제·되돌리기 후)
+function syncSaveButton() {
+    if (!currentResult) return;
+    const saved = isSaved(currentResult);
+    saveButton.disabled = saved;
+    memoInput.disabled = saved;
+    saveButton.textContent = saved ? "저장 완료" : "보관함에 저장";
+}
+
+function handleSave() {
+    if (!currentResult) return;
+
+    const memo = memoInput.value.trim();
+
+    if (memo.length > MAX_MEMO) {
+        setError(memoInput, memoError, "메모는 " + MAX_MEMO + "자 이내로 줄여 주세요. (지금 " + memo.length + "자)");
+        memoInput.focus();
+        return;
+    }
+    clearError(memoInput, memoError);
+
+    if (isSaved(currentResult)) {
+        showSaveFeedback("이미 보관함에 있는 답장이에요. 아래 보관함에서 확인해 보세요.", "warn");
+        syncSaveButton();
+        return;
+    }
+
+    const now = Date.now();
+    savedReplies.unshift({
+        id: now,
+        nickname: currentResult.nickname,
+        concern: currentResult.concern,
+        relation: currentResult.relation,
+        tone: currentResult.tone,
+        reply: currentResult.reply,
+        memo: memo,
+        savedAt: now
+    });
+    persistSaved();
+    hideUndo();
+    renderSaved();
+
+    showSaveFeedback("💾 보관함에 저장했어요! 지금 " + savedReplies.length + "개가 보관되어 있어요.", "success");
+    syncSaveButton();
+}
+
+// ---- 보관함 목록: 찾기 ----
+function getFilteredReplies() {
+    const keyword = savedSearch.value.trim().toLowerCase();
+    const relation = savedFilter.value;
+
+    return savedReplies.filter(function (item) {
+        const matchRelation = relation === "all" || item.relation === relation;
+        const text = (item.memo + " " + item.concern + " " + item.reply + " " + item.nickname).toLowerCase();
+        const matchKeyword = keyword === "" || text.includes(keyword);
+        return matchRelation && matchKeyword;
+    });
+}
+
+function showEmpty(text, actionLabel, action) {
+    savedEmpty.hidden = false;
+    savedEmptyText.textContent = text;
+    savedEmptyAction.textContent = actionLabel;
+    savedEmptyAction.dataset.action = action;
+}
+
+function renderSaved() {
+    const list = getFilteredReplies();
+    savedList.innerHTML = "";
+
+    if (savedReplies.length === 0) {
+        savedCount.textContent = "보관된 답장 0개";
+        showEmpty("아직 저장한 답장이 없어요. 위의 AI 답장 상담을 끝까지 진행한 뒤 '보관함에 저장'을 눌러 보세요.",
+            "상담하러 가기", "consult");
+    } else if (list.length === 0) {
+        savedCount.textContent = "전체 " + savedReplies.length + "개 중 0개 표시";
+        const conditions = [];
+        const keyword = savedSearch.value.trim();
+        if (keyword !== "") conditions.push("'" + keyword + "'");
+        if (savedFilter.value !== "all") conditions.push(relationLabels[savedFilter.value]);
+        showEmpty(conditions.join(" · ") + " 조건에 맞는 답장이 없어요. 다른 키워드를 입력하거나 관계 상황을 '전체'로 바꿔 보세요.",
+            "검색 조건 초기화", "reset");
+    } else {
+        savedCount.textContent = "전체 " + savedReplies.length + "개 중 " + list.length + "개 표시";
+        savedEmpty.hidden = true;
+        list.forEach(function (item) {
+            savedList.appendChild(createCard(item));
+        });
+    }
+
+    // 열어 둔 항목이 삭제됐으면 상세 닫기
+    if (openedId !== null && !findSaved(openedId)) {
+        closeDetail();
+    }
+}
+
+function createCard(item) {
+    const li = document.createElement("li");
+    li.className = "saved-card" + (item.id === openedId ? " opened" : "");
+
+    const meta = document.createElement("p");
+    meta.className = "saved-meta";
+    meta.textContent = relationLabels[item.relation] + " · " + toneLabels[item.tone] + " · " + formatDate(item.savedAt);
+
+    const memo = document.createElement("p");
+    memo.className = "saved-memo" + (item.memo ? "" : " empty");
+    memo.textContent = item.memo || "메모 없음";
+
+    const preview = document.createElement("p");
+    preview.className = "saved-preview";
+    preview.textContent = item.reply;
+
+    const actions = document.createElement("div");
+    actions.className = "saved-actions";
+
+    const openButton = document.createElement("button");
+    openButton.type = "button";
+    openButton.className = "secondary";
+    openButton.textContent = item.id === openedId ? "열려 있음" : "열기";
+    openButton.addEventListener("click", function () { openDetail(item.id); });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "danger";
+    deleteButton.textContent = "삭제";
+    deleteButton.addEventListener("click", function () { deleteReply(item.id); });
+
+    actions.append(openButton, deleteButton);
+    li.append(meta, memo, preview, actions);
+    return li;
+}
+
+// ---- 열기 / 닫기 ----
+function openDetail(id) {
+    const item = findSaved(id);
+    if (!item) return;
+
+    openedId = id;
+    document.querySelector("#detail-memo").textContent = item.memo || "메모 없는 답장";
+    document.querySelector("#detail-meta").textContent =
+        relationLabels[item.relation] + " · " + toneLabels[item.tone] + " · " + formatDate(item.savedAt) + " 저장";
+    document.querySelector("#detail-nickname").textContent = item.nickname;
+    document.querySelector("#detail-concern").textContent = item.concern;
+    document.querySelector("#detail-reply").textContent = "\"" + item.reply + "\"";
+    savedDetail.hidden = false;
+
+    renderSaved();
+    savedDetail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function closeDetail() {
+    openedId = null;
+    savedDetail.hidden = true;
+}
+
+// 저장한 내용으로 7주차 상담 흐름에 다시 들어가기 (확인 단계로 이동)
+function reuseReply() {
+    const item = findSaved(openedId);
+    if (!item) return;
+
+    nicknameInput.value = item.nickname;
+    concernInput.value = item.concern;
+    relationInputs.forEach(function (input) {
+        input.checked = input.value === item.relation;
+    });
+    toneSelect.value = item.tone;
+
+    clearError(nicknameInput, nicknameError);
+    clearError(concernInput, concernError);
+    clearError(null, relationError);
+    clearError(toneSelect, toneError);
+    updateConcernCount();
+
+    fillSummary();
+    goToStep(4);
+    document.querySelector("#consult").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ---- 삭제 / 되돌리기 ----
+function hideUndo() {
+    undoBar.hidden = true;
+    lastDeleted = null;
+}
+
+function deleteReply(id) {
+    const index = savedReplies.findIndex(function (item) { return item.id === id; });
+    if (index === -1) return;
+
+    const item = savedReplies[index];
+    savedReplies.splice(index, 1);
+    persistSaved();
+    lastDeleted = { item: item, index: index };
+
+    if (openedId === id) closeDetail();
+    renderSaved();
+    syncSaveButton();
+
+    const name = item.memo || item.reply.slice(0, 12) + "…";
+    undoText.textContent = "'" + name + "' 답장을 삭제했어요.";
+    undoBar.hidden = false;
+}
+
+function undoDelete() {
+    if (!lastDeleted) return;
+
+    const index = Math.min(lastDeleted.index, savedReplies.length);
+    savedReplies.splice(index, 0, lastDeleted.item);
+    persistSaved();
+    hideUndo();
+    renderSaved();
+    syncSaveButton();
+}
+
+// ---- 이벤트 연결 ----
+saveButton.addEventListener("click", handleSave);
+
+memoInput.addEventListener("input", function () {
+    if (memoInput.value.trim().length <= MAX_MEMO) clearError(memoInput, memoError);
+});
+
+savedSearch.addEventListener("input", renderSaved);
+savedFilter.addEventListener("change", renderSaved);
+
+savedEmptyAction.addEventListener("click", function () {
+    if (savedEmptyAction.dataset.action === "reset") {
+        savedSearch.value = "";
+        savedFilter.value = "all";
+        renderSaved();
+        savedSearch.focus();
+    } else {
+        document.querySelector("#consult").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+});
+
+document.querySelector("#btn-detail-close").addEventListener("click", function () {
+    closeDetail();
+    renderSaved();
+});
+
+document.querySelector("#btn-detail-delete").addEventListener("click", function () {
+    if (openedId !== null) deleteReply(openedId);
+});
+
+document.querySelector("#btn-detail-reuse").addEventListener("click", reuseReply);
+document.querySelector("#btn-undo").addEventListener("click", undoDelete);
+
+renderSaved();

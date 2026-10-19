@@ -1,6 +1,6 @@
 /* =========================================
    Amor AI - CSS
-   3주차 디자인 / 4주차 반응형 / 5·6·7주차 기능 스타일
+   3주차 디자인 / 4주차 반응형 / 5·6·7주차·중간고사 기능 스타일
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -536,6 +536,208 @@ button.secondary:hover {
 }
 
 /* =========================================
+   중간고사: 보관함에 저장 + 내 답장 보관함
+   ========================================= */
+[hidden] {
+    display: none !important;
+}
+
+/* 고정 메뉴에 가리지 않도록 스크롤 위치 여유 */
+section,
+.saved-detail {
+    scroll-margin-top: 80px;
+}
+
+/* 완료 화면의 저장 영역 */
+.save-box {
+    margin-top: 18px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+#consult .save-box input[type="text"]:disabled {
+    color: #868e96;
+    background-color: #f1f3f5;
+}
+
+.save-feedback {
+    margin: 10px 0 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.save-feedback:empty {
+    display: none;
+}
+
+.save-feedback.success {
+    padding: 10px 12px;
+    color: #2b8a3e;
+    background-color: #ebfbee;
+    border-radius: 6px;
+}
+
+.save-feedback.warn {
+    padding: 10px 12px;
+    color: #e8590c;
+    background-color: #fff4e6;
+    border-radius: 6px;
+}
+
+/* 보관함 검색 도구 */
+.saved-tools {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+#saved input[type="text"],
+#saved select {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid #f4a6b8;
+    border-radius: 6px;
+}
+
+.saved-count {
+    margin: 14px 0 10px;
+    font-size: 14px;
+    color: #868e96;
+}
+
+/* 목록 */
+.saved-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.saved-card {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 14px 16px;
+    background-color: #ffffff;
+    border: 1px solid #f8d0da;
+    border-radius: 10px;
+}
+
+.saved-card.opened {
+    background-color: #fff0f3;
+    border: 2px solid #d6336c;
+}
+
+.saved-meta {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #868e96;
+}
+
+.saved-memo {
+    margin: 0 0 6px;
+    font-weight: bold;
+    color: #222222;
+    word-break: break-all;
+}
+
+.saved-memo.empty {
+    font-weight: normal;
+    color: #adb5bd;
+}
+
+.saved-preview {
+    flex: 1;
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: #a61e4d;
+    word-break: keep-all;
+}
+
+.saved-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.saved-actions button {
+    flex: 1;
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+button.danger {
+    color: #e03131;
+    background-color: #ffffff;
+    border: 1px solid #e03131;
+}
+
+button.danger:hover {
+    color: #ffffff;
+    background-color: #e03131;
+}
+
+/* 결과 없음 / 비어 있음 안내 */
+.saved-empty {
+    padding: 24px 16px;
+    text-align: center;
+    color: #868e96;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 10px;
+    word-break: keep-all;
+}
+
+.saved-empty button {
+    margin: 4px 0 0;
+}
+
+/* 열어 본 답장 */
+.saved-detail {
+    margin-bottom: 16px;
+    padding: 18px;
+    background-color: #ffffff;
+    border: 2px solid #d6336c;
+    border-radius: 12px;
+}
+
+.saved-detail-label {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #d6336c;
+}
+
+/* 삭제 후 되돌리기 */
+.undo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    color: #ffffff;
+    background-color: #495057;
+    border-radius: 8px;
+    word-break: keep-all;
+}
+
+.undo-bar button {
+    flex: none;
+    margin: 0;
+    padding: 6px 14px;
+    font-size: 14px;
+}
+
+/* =========================================
    4주차: 768px 이하 (태블릿·모바일)
    ========================================= */
 @media (max-width: 768px) {
@@ -638,5 +840,29 @@ button.secondary:hover {
         width: auto;
         padding: 10px 6px;
         font-size: 14px;
+    }
+
+    /* 중간고사: 보관함 모바일 */
+    .saved-tools {
+        grid-template-columns: 1fr;
+    }
+
+    .saved-list {
+        grid-template-columns: 1fr;
+    }
+
+    .saved-actions button {
+        width: auto;
+    }
+
+    .undo-bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .undo-bar button,
+    .saved-empty button {
+        width: 100%;
     }
 }
