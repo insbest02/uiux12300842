@@ -24,6 +24,7 @@
         <a href="#features">주요 기능</a> |
         <a href="#howto">이용 방법</a> |
         <a href="#signup">가입하기</a>
+        <a href="#consult">AI 상담</a> |
     </nav>
 
     <!-- 서비스 이름 및 한 줄 소개 -->
@@ -81,6 +82,110 @@
             </ul>
         </div>
     </section>
+
+        <!--
+        7주차: AI 답장 상담 흐름
+        주요 사용자: 상대에게 보낼 답장이 고민되는 20~30대
+        사용자 목표: 내 상황에 맞는 답장 문장을 추천받는 것
+        핵심 행동: 고민을 입력하고 관계 상황·답장 톤을 골라 추천 받기
+        완료 조건: 완료 화면에 닉네임과 추천 답장이 표시되면 완료
+        흐름: 시작 -> 입력 -> 선택 -> 확인 -> 완료
+    -->
+    <section id="consult">
+        <h3>AI 답장 상담</h3>
+
+        <ol class="progress">
+            <li>시작</li>
+            <li>입력</li>
+            <li>선택</li>
+            <li>확인</li>
+            <li>완료</li>
+        </ol>
+
+        <!-- ① 시작 -->
+        <div class="step-panel active" data-step="1">
+            <p class="step-title">보낼 답장이 고민되나요?</p>
+            <p class="step-desc">고민을 적고 지금 상황을 고르면, Amor AI가 보낼 답장을 추천해 드려요.</p>
+            <div class="step-actions">
+                <button type="button" id="btn-start">상담 시작하기</button>
+            </div>
+        </div>
+
+        <!-- ② 입력 -->
+        <div class="step-panel" data-step="2">
+            <p class="step-title">고민을 알려주세요</p>
+            <div class="field">
+                <label for="consult-nickname">닉네임 (필수)</label>
+                <input type="text" id="consult-nickname" placeholder="예) 아모르">
+                <p class="field-error" id="nickname-error"></p>
+            </div>
+            <div class="field">
+                <label for="consult-concern">고민 내용 (필수, 10자 이상)</label>
+                <textarea id="consult-concern" placeholder="예) 어제 연락이 늦었는데 상대가 서운해하는 것 같아요."></textarea>
+                <p class="char-count" id="concern-count"></p>
+                <p class="field-error" id="concern-error"></p>
+            </div>
+            <div class="step-actions">
+                <button type="button" id="btn-to-choice">다음</button>
+            </div>
+        </div>
+
+        <!-- ③ 선택 -->
+        <div class="step-panel" data-step="3">
+            <p class="step-title">상황과 답장 톤을 골라주세요</p>
+            <div class="field">
+                <label>지금 관계 상황 (필수)</label>
+                <div class="choices">
+                    <label class="choice"><input type="radio" name="relation" value="some"> 썸 타는 중</label>
+                    <label class="choice"><input type="radio" name="relation" value="dating"> 연애 중</label>
+                    <label class="choice"><input type="radio" name="relation" value="fight"> 다툰 후</label>
+                </div>
+                <p class="field-error" id="relation-error"></p>
+            </div>
+            <div class="field">
+                <label for="consult-tone">답장 톤 (필수)</label>
+                <select id="consult-tone">
+                    <option value="">톤을 선택하세요</option>
+                    <option value="sweet">다정하게</option>
+                    <option value="honest">솔직하게</option>
+                    <option value="fun">유쾌하게</option>
+                </select>
+                <p class="field-error" id="tone-error"></p>
+            </div>
+            <div class="step-actions">
+                <button type="button" class="secondary" id="btn-back-input">이전</button>
+                <button type="button" id="btn-to-confirm">다음</button>
+            </div>
+        </div>
+
+        <!-- ④ 확인 -->
+        <div class="step-panel" data-step="4">
+            <p class="step-title">입력한 내용을 확인해 주세요</p>
+            <dl class="summary">
+                <div><dt>닉네임</dt><dd id="summary-nickname"></dd></div>
+                <div><dt>고민</dt><dd id="summary-concern"></dd></div>
+                <div><dt>관계 상황</dt><dd id="summary-relation"></dd></div>
+                <div><dt>답장 톤</dt><dd id="summary-tone"></dd></div>
+            </dl>
+            <div class="step-actions">
+                <button type="button" class="secondary" id="btn-edit-input">고민 수정</button>
+                <button type="button" class="secondary" id="btn-back-choice">이전</button>
+                <button type="button" id="btn-complete">추천 받기</button>
+            </div>
+        </div>
+
+        <!-- ⑤ 완료 -->
+        <div class="step-panel" data-step="5">
+            <span class="done-badge">✅ 상담 완료</span>
+            <p class="step-title" id="result-title"></p>
+            <p class="result-reply" id="result-reply"></p>
+            <p class="result-meta" id="result-meta"></p>
+            <div class="step-actions">
+                <button type="button" id="btn-restart">다시 상담하기</button>
+            </div>
+        </div>
+    </section>
+
 
     <!-- 이용 방법 3단계 -->
     <section id="howto">

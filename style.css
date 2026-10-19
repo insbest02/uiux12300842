@@ -1,6 +1,6 @@
 /* =========================================
    Amor AI - CSS
-   3주차 디자인 / 4주차 반응형 / 5·6주차 기능 스타일
+   3주차 디자인 / 4주차 반응형 / 5·6·7주차 기능 스타일
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -314,6 +314,228 @@ select {
 }
 
 /* =========================================
+   7주차: AI 답장 상담 흐름
+   ========================================= */
+
+/* 진행 단계 표시 */
+.progress {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.progress li {
+    flex: 1;
+    margin: 0;
+    padding: 8px 4px;
+    font-size: 13px;
+    text-align: center;
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    border-bottom: 3px solid #dee2e6;
+    border-radius: 6px 6px 0 0;
+    word-break: keep-all;
+}
+
+.progress li.done {
+    color: #d6336c;
+    background-color: #fff0f3;
+    border-bottom-color: #f4a6b8;
+}
+
+.progress li.active {
+    color: #ffffff;
+    font-weight: bold;
+    background-color: #d6336c;
+    border-bottom-color: #a61e4d;
+}
+
+/* 현재 단계 화면만 보이기 */
+.step-panel {
+    display: none;
+}
+
+.step-panel.active {
+    display: block;
+}
+
+.step-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #222222;
+}
+
+.step-desc {
+    color: #868e96;
+}
+
+.field {
+    margin-bottom: 18px;
+}
+
+#consult input[type="text"],
+#consult textarea,
+#consult select {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid #f4a6b8;
+    border-radius: 6px;
+}
+
+#consult textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+#consult .invalid {
+    border: 2px solid #e03131;
+    outline: none;
+}
+
+.char-count {
+    margin: 6px 0 0;
+    font-size: 13px;
+    text-align: right;
+    color: #adb5bd;
+}
+
+.char-count.enough {
+    color: #2b8a3e;
+}
+
+.field-error {
+    margin: 6px 0 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #e03131;
+}
+
+.field-error:empty {
+    display: none;
+}
+
+/* 관계 상황 라디오 선택 카드 */
+.choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 12px;
+    font-weight: normal;
+    background-color: #ffffff;
+    border: 1px solid #f8d0da;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#consult .choice input[type="radio"] {
+    width: auto;
+    margin: 0;
+    accent-color: #d6336c;
+}
+
+.choice:has(input:checked) {
+    font-weight: bold;
+    color: #d6336c;
+    background-color: #fff0f3;
+    border: 2px solid #d6336c;
+}
+
+/* 확인 화면 요약 */
+.summary {
+    margin: 0 0 16px;
+    padding: 16px;
+    background-color: #fff0f3;
+    border-radius: 8px;
+}
+
+.summary div {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #f4a6b8;
+}
+
+.summary div:last-child {
+    border-bottom: none;
+}
+
+.summary dt {
+    flex: 0 0 80px;
+    font-weight: bold;
+    color: #a61e4d;
+}
+
+.summary dd {
+    margin: 0;
+    word-break: break-all;
+}
+
+/* 완료 화면 */
+.done-badge {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 4px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2b8a3e;
+    background-color: #ebfbee;
+    border-radius: 999px;
+}
+
+.result-reply {
+    padding: 18px;
+    font-size: 17px;
+    color: #a61e4d;
+    background-color: #fff0f6;
+    border-left: 5px solid #f06595;
+    border-radius: 8px;
+    word-break: keep-all;
+}
+
+.result-meta {
+    font-size: 14px;
+    color: #868e96;
+}
+
+/* 이전 / 다음 버튼 줄 */
+.step-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.step-actions button {
+    flex: 1;
+    margin: 0;
+    word-break: keep-all;
+}
+
+button.secondary {
+    color: #d6336c;
+    background-color: #ffffff;
+    border: 1px solid #d6336c;
+}
+
+button.secondary:hover {
+    background-color: #fff0f3;
+}
+
+/* =========================================
    4주차: 768px 이하 (태블릿·모바일)
    ========================================= */
 @media (max-width: 768px) {
@@ -391,5 +613,30 @@ select {
 
     select {
         max-width: none;
+    }
+
+    /* 7주차: 상담 흐름 모바일 */
+    .progress li {
+        padding: 6px 2px;
+        font-size: 12px;
+    }
+
+    .choices {
+        grid-template-columns: 1fr;
+    }
+
+    .summary div {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .summary dt {
+        flex: none;
+    }
+
+    .step-actions button {
+        width: auto;
+        padding: 10px 6px;
+        font-size: 14px;
     }
 }
