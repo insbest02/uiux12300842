@@ -1,10 +1,11 @@
 // =========================================
 // Amor AI - JavaScript
-// 5주차: 이메일 가입 신청 확인 (submit)
+// 5주차: 이메일 신청 확인 (submit) -> 9주차에 알림 신청 폼으로 개선
 // 6주차: 탭 전환 (click), 실시간 이메일 검사 (input),
 //        상황별 추천 답장 (change)
 // 7주차: AI 답장 상담 흐름 (시작 → 입력 → 선택 → 확인 → 완료)
 // 중간고사: 내 답장 보관함 (저장 → 찾기 → 열기·다시 상담 → 삭제·되돌리기)
+// 9주차: 소식 알림 신청 폼 (조건부 입력, 실시간 검증, 제출 상태) + 답장 복사
 // =========================================
 
 
@@ -54,81 +55,18 @@ function showReply() {
     const situation = situationSelect.value;
 
     if (situation === "") {
-        replyBox.textContent = "상황을 선택하면 AI가 추천 답장을 보여드려요.";
+        replyBox.textContent = "상황을 선택하면 상황별 예시 답장을 보여드려요.";
         replyBox.className = "reply-box";
+        document.querySelector("#reply-copy-row").hidden = true;
     } else {
-        replyBox.textContent = "💬 추천 답장: " + replies[situation];
+        replyBox.textContent = "💬 상황별 예시 답장: " + replies[situation];
         replyBox.className = "reply-box " + situation; // 상황마다 색상 변경
+        document.querySelector("#reply-copy-row").hidden = false;
     }
+    document.querySelector("#copy-feedback-tab").textContent = "";
 }
 
 situationSelect.addEventListener("change", showReply);
-
-
-// -----------------------------------------
-// 5주차 + 6주차 ③ 이메일 가입 (input / submit 이벤트)
-// -----------------------------------------
-const signupForm = document.querySelector("#signup form");
-const emailInput = document.querySelector("#email");
-const signupButton = document.querySelector("#signup button");
-const message = document.querySelector("#signup-message");
-
-// 브라우저 기본 경고창 대신 직접 만든 안내 문구 사용
-signupForm.noValidate = true;
-
-// 처음에는 버튼 비활성화 + 안내 문구
-signupButton.disabled = true;
-showMessage("이메일을 입력하면 가입 신청 버튼이 활성화돼요.", "hint");
-
-function showMessage(text, type) {
-    message.textContent = text;
-    message.className = "message " + type;
-}
-
-function isValidEmail(email) {
-    return email.includes("@") && email.includes(".") && email.indexOf("@") > 0;
-}
-
-// input 이벤트: 입력할 때마다 실시간 검사
-function checkEmail() {
-    const email = emailInput.value.trim();
-
-    if (email === "") {
-        showMessage("이메일을 입력하면 가입 신청 버튼이 활성화돼요.", "hint");
-        emailInput.className = "";
-        signupButton.disabled = true;
-    } else if (!isValidEmail(email)) {
-        showMessage("이메일 형식을 확인해 주세요. 예) amor@email.com", "error");
-        emailInput.className = "invalid";   // 입력칸 빨간 테두리
-        signupButton.disabled = true;       // 버튼 비활성화
-    } else {
-        showMessage("올바른 이메일 형식이에요! 가입 신청을 눌러 주세요.", "ok");
-        emailInput.className = "valid";     // 입력칸 초록 테두리
-        signupButton.disabled = false;      // 버튼 활성화
-    }
-}
-
-emailInput.addEventListener("input", checkEmail);
-
-// submit 이벤트: 가입 신청 버튼 클릭
-function handleSignup(event) {
-    event.preventDefault(); // 페이지 새로고침 막기
-
-    const email = emailInput.value.trim();
-
-    if (!isValidEmail(email)) {
-        checkEmail();
-        emailInput.focus();
-        return;
-    }
-
-    showMessage("💗 " + email + " 으로 가입 신청이 완료되었어요! Amor AI 소식을 보내드릴게요.", "success");
-    signupButton.textContent = "신청 완료";
-    signupButton.disabled = true;
-    emailInput.disabled = true;
-}
-
-signupForm.addEventListener("submit", handleSignup);
 
 
 // -----------------------------------------
@@ -279,6 +217,7 @@ function showResult() {
         reply: consultReplies[relation][tone]
     };
     resetSaveState();
+    document.querySelector("#copy-feedback-result").textContent = "";
     if (isSaved(currentResult)) {
         syncSaveButton();
         showSaveFeedback("이미 보관함에 저장된 답장이에요. 아래 보관함에서 확인할 수 있어요.", "warn");
@@ -591,6 +530,7 @@ function openDetail(id) {
     document.querySelector("#detail-nickname").textContent = item.nickname;
     document.querySelector("#detail-concern").textContent = item.concern;
     document.querySelector("#detail-reply").textContent = "\"" + item.reply + "\"";
+    document.querySelector("#copy-feedback-detail").textContent = "";
     savedDetail.hidden = false;
 
     renderSaved();
@@ -694,3 +634,467 @@ document.querySelector("#btn-detail-reuse").addEventListener("click", reuseReply
 document.querySelector("#btn-undo").addEventListener("click", undoDelete);
 
 renderSaved();
+
+
+
+// -----------------------------------------
+// 9주차 (교수님 코멘트 반영): 답장 복사
+// 추천 답장을 바로 메신저에 붙여넣을 수 있게 클립보드에 복사
+// -----------------------------------------
+function fallbackCopy(text) {
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "fixed";
+    helper.style.opacity = "0";
+    document.body.appendChild(helper);
+    helper.select();
+    let ok = false;
+    try {
+        ok = document.execCommand("copy");
+    } catch (e) {
+        ok = false;
+    }
+    helper.remove();
+    return ok;
+}
+
+function copyReply(text, feedbackEl) {
+    const showResult = function (ok) {
+        if (ok) {
+            feedbackEl.textContent = "✓ 복사했어요! 메신저에 붙여넣어 보내 보세요.";
+            feedbackEl.className = "copy-feedback success";
+        } else {
+            feedbackEl.textContent = "✗ 복사하지 못했어요. 답장 문장을 길게 눌러 직접 복사해 주세요.";
+            feedbackEl.className = "copy-feedback error";
+        }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+            .then(function () { showResult(true); })
+            .catch(function () { showResult(fallbackCopy(text)); });
+    } else {
+        showResult(fallbackCopy(text));
+    }
+}
+
+document.querySelector("#btn-copy-tab").addEventListener("click", function () {
+    const situation = situationSelect.value;
+    if (situation === "") return;
+    copyReply(replies[situation].replace(/^"|"$/g, ""), document.querySelector("#copy-feedback-tab"));
+});
+
+document.querySelector("#btn-copy-result").addEventListener("click", function () {
+    if (!currentResult) return;
+    copyReply(currentResult.reply, document.querySelector("#copy-feedback-result"));
+});
+
+document.querySelector("#btn-copy-detail").addEventListener("click", function () {
+    const item = findSaved(openedId);
+    if (!item) return;
+    copyReply(item.reply, document.querySelector("#copy-feedback-detail"));
+});
+
+
+// -----------------------------------------
+// 9주차: Amor AI 소식 알림 신청 폼
+// 입력 검증(입력 중 피드백) → 조건부 입력(문자 알림) → submit 처리(차단·신청 중·성공·실패)
+// -----------------------------------------
+const NOTIFY_KEY = "amor-notify-list";
+const NAME_MIN = 2;
+const NAME_MAX = 10;
+const WISH_MAX = 100;
+
+const topicLabels = {
+    reply: "답장 추천 팁",
+    analysis: "대화 분석 리포트 소식",
+    coaching: "관계 코칭 콘텐츠",
+    news: "새 기능 출시 소식"
+};
+const frequencyLabels = { weekly: "주 1회 모아서", instant: "새 소식이 있을 때마다" };
+
+const notifyForm = document.querySelector("#notify-form");
+const notifySubmit = document.querySelector("#notify-submit");
+const notifyReset = document.querySelector("#notify-reset");
+const formSummary = document.querySelector("#form-summary");
+const submitStatus = document.querySelector("#submit-status");
+const notifyDone = document.querySelector("#notify-done");
+
+const smsCheck = document.querySelector("#notify-sms");
+const smsArea = document.querySelector("#sms-area");
+const phoneInput = document.querySelector("#notify-phone");
+
+let isSubmitting = false;
+let editingEmail = null;        // 신청 내용 수정 중이면 원래 이메일
+let duplicateEmail = null;      // 실패(중복)로 표시 중인 이메일
+
+// 브라우저 저장 (실패하면 제출 실패로 처리)
+function loadNotifyList() {
+    try {
+        const data = JSON.parse(localStorage.getItem(NOTIFY_KEY));
+        return Array.isArray(data) ? data : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveNotifyList(list) {
+    localStorage.setItem(NOTIFY_KEY, JSON.stringify(list)); // 저장할 수 없으면 오류 발생 -> 실패 처리
+}
+
+function phoneDigits(value) {
+    return value.replace(/\D/g, "");
+}
+
+function formatPhone(value) {
+    const d = phoneDigits(value).slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0, 3) + "-" + d.slice(3);
+    if (d.length === 10) return d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6);
+    return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7);
+}
+
+// 항목별 검사 규칙: ok(통과 여부), message(오류 문구), hint(입력 중 안내)
+const fields = {
+    name: {
+        el: document.querySelector("#notify-name"),
+        status: document.querySelector("#name-status"),
+        label: "이름",
+        check: function (value) {
+            const length = value.trim().length;
+            const count = length + " / " + NAME_MAX + "자";
+            if (length === 0) return { ok: false, message: "이름 또는 닉네임을 입력해 주세요.", hint: count + " · " + NAME_MIN + "자 이상 입력하면 돼요" };
+            if (length < NAME_MIN) return { ok: false, message: NAME_MIN + "자 이상 입력해 주세요. (지금 " + length + "자)", hint: count + " · " + (NAME_MIN - length) + "자 더 필요해요" };
+            return { ok: true, okText: count + " · 사용할 수 있어요" };
+        }
+    },
+    email: {
+        el: document.querySelector("#notify-email"),
+        status: document.querySelector("#email-status"),
+        label: "이메일",
+        check: function (value) {
+            const email = value.trim();
+            if (email === "") return { ok: false, message: "이메일 주소를 입력해 주세요.", hint: "" };
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                return { ok: false, message: "이메일 형식이 아니에요. '@'와 '.'을 넣어 고쳐 주세요. 예) amor@email.com", hint: "아직 이메일 형식이 아니에요" };
+            }
+            if (duplicateEmail !== null && email.toLowerCase() === duplicateEmail) {
+                return { ok: false, message: "이미 알림을 신청한 이메일이에요. 다른 주소를 입력해 주세요.", hint: "" };
+            }
+            return { ok: true, okText: "올바른 이메일 형식이에요" };
+        }
+    },
+    topic: {
+        el: document.querySelector("#notify-topic"),
+        status: document.querySelector("#topic-status"),
+        label: "받을 소식",
+        check: function (value) {
+            if (value === "") return { ok: false, message: "받고 싶은 소식을 하나 골라 주세요.", hint: "" };
+            return { ok: true, okText: "'" + topicLabels[value] + "'을(를) 먼저 보내 드려요" };
+        }
+    },
+    phone: {
+        el: phoneInput,
+        status: document.querySelector("#phone-status"),
+        label: "휴대폰 번호",
+        check: function (value) {
+            const d = phoneDigits(value);
+            if (d.length === 0) return { ok: false, message: "문자를 받을 휴대폰 번호를 입력해 주세요. 원하지 않으면 위 체크를 해제하세요.", hint: "" };
+            if (!/^01[016789]\d{7,8}$/.test(d)) {
+                return { ok: false, message: "휴대폰 번호를 확인해 주세요. 010으로 시작하는 10~11자리예요. (지금 " + d.length + "자리)", hint: d.length + "자리 입력 중 · 10~11자리가 필요해요" };
+            }
+            return { ok: true, okText: "문자 알림을 받을 수 있는 번호예요" };
+        }
+    },
+    wish: {
+        el: document.querySelector("#notify-wish"),
+        status: document.querySelector("#wish-status"),
+        label: "바라는 점",
+        check: function (value) {
+            const length = value.trim().length;
+            const count = length + " / " + WISH_MAX + "자";
+            if (length > WISH_MAX) return { ok: false, message: WISH_MAX + "자 이내로 줄여 주세요. (지금 " + length + "자, " + (length - WISH_MAX) + "자 초과)", hint: "" };
+            return { ok: true, okText: count, quiet: length === 0 };
+        }
+    },
+    agree: {
+        el: document.querySelector("#notify-agree"),
+        status: document.querySelector("#agree-status"),
+        label: "동의",
+        check: function () {
+            if (!document.querySelector("#notify-agree").checked) return { ok: false, message: "알림을 보내려면 정보 저장에 동의해 주세요.", hint: "" };
+            return { ok: true, okText: "동의했어요" };
+        }
+    }
+};
+
+Object.keys(fields).forEach(function (key) { fields[key].touched = false; });
+
+// 화면에 상태 표시: 색과 함께 ✓/✗ 문구로도 구분
+function setStatus(field, state, text) {
+    field.status.textContent = text;
+    field.status.className = "field-status " + state;
+    field.el.classList.toggle("invalid", state === "error");
+    field.el.classList.toggle("valid", state === "ok");
+    field.el.setAttribute("aria-invalid", state === "error" ? "true" : "false");
+}
+
+// 한 항목 검사 + 표시. 오류는 한 번 건드렸거나(blur) 제출을 시도한 뒤부터 빨갛게 보여 줌
+function renderField(key) {
+    const field = fields[key];
+    if (field.el.disabled) {
+        setStatus(field, "", "");
+        return true;
+    }
+    const value = field.el.type === "checkbox" ? "" : field.el.value;
+    const result = field.check(value);
+
+    if (result.ok) {
+        if (result.quiet) setStatus(field, "", "");
+        else setStatus(field, "ok", "✓ " + result.okText);
+    } else if (field.touched) {
+        setStatus(field, "error", "✗ " + result.message);
+    } else {
+        setStatus(field, result.hint ? "hint" : "", result.hint);
+    }
+    return result.ok;
+}
+
+function updateSummary() {
+    if (formSummary.hidden) return;
+    const invalid = Object.keys(fields).filter(function (key) {
+        return !fields[key].el.disabled && !fields[key].check(fields[key].el.value || "").ok;
+    });
+    if (invalid.length === 0) {
+        formSummary.hidden = true;
+    } else {
+        showSummary(invalid);
+    }
+}
+
+function showSummary(invalidKeys) {
+    const names = invalidKeys.map(function (key) { return fields[key].label; });
+    formSummary.textContent = "확인이 필요한 항목이 " + invalidKeys.length + "개 있어요: " + names.join(", ") +
+        ". 빨간 안내를 보고 고친 뒤 다시 신청해 주세요.";
+    formSummary.hidden = false;
+}
+
+// 입력 중 피드백 연결
+["name", "email", "phone", "wish"].forEach(function (key) {
+    const field = fields[key];
+    field.el.addEventListener("input", function () {
+        if (key === "phone") {
+            field.el.value = formatPhone(field.el.value);
+        }
+        if (key === "email" && duplicateEmail !== null && field.el.value.trim().toLowerCase() !== duplicateEmail) {
+            duplicateEmail = null; // 주소를 고치면 중복 오류 해제
+        }
+        if (key === "wish" && field.el.value.trim().length > WISH_MAX) {
+            field.touched = true; // 글자 수 초과는 입력 중에도 바로 알려 줌
+        }
+        renderField(key);
+        updateSummary();
+    });
+    field.el.addEventListener("blur", function () {
+        if (field.el.value.trim() !== "") field.touched = true;
+        renderField(key);
+    });
+});
+
+fields.topic.el.addEventListener("change", function () {
+    fields.topic.touched = true;
+    renderField("topic");
+    updateSummary();
+});
+
+fields.agree.el.addEventListener("change", function () {
+    fields.agree.touched = true;
+    renderField("agree");
+    updateSummary();
+});
+
+// 조건부 입력: 문자 알림 체크 → 휴대폰 번호 영역 표시 + 사용 가능 / 해제 → 숨김 + disabled
+function updateSmsArea() {
+    const on = smsCheck.checked;
+    smsArea.hidden = !on;
+    phoneInput.disabled = !on;
+    smsCheck.setAttribute("aria-expanded", on ? "true" : "false");
+    if (!on) fields.phone.touched = false;
+    renderField("phone");
+    updateSummary();
+}
+
+smsCheck.addEventListener("change", function () {
+    updateSmsArea();
+    if (smsCheck.checked) phoneInput.focus();
+});
+
+// 제출 중 / 끝 버튼 상태
+function setSubmitting(on) {
+    isSubmitting = on;
+    notifySubmit.disabled = on;
+    notifyReset.disabled = on;
+    notifyForm.setAttribute("aria-busy", on ? "true" : "false");
+    if (on) {
+        notifySubmit.textContent = editingEmail ? "저장 중…" : "신청 중…";
+    } else {
+        notifySubmit.textContent = editingEmail ? "수정 내용 저장" : "알림 신청하기";
+    }
+}
+
+function showSubmitStatus(text, type) {
+    submitStatus.textContent = text;
+    submitStatus.className = "submit-status " + type;
+}
+
+function collectForm() {
+    return {
+        name: fields.name.el.value.trim(),
+        email: fields.email.el.value.trim(),
+        topic: fields.topic.el.value,
+        frequency: document.querySelector('input[name="frequency"]:checked').value,
+        phone: smsCheck.checked ? formatPhone(phoneInput.value) : "",
+        wish: fields.wish.el.value.trim(),
+        savedAt: Date.now()
+    };
+}
+
+// 저장 시도: 성공하면 기록, 실패하면 이유를 담은 오류를 던짐
+function saveApplication(data) {
+    const list = loadNotifyList();
+    const email = data.email.toLowerCase();
+    const original = editingEmail ? editingEmail.toLowerCase() : null;
+
+    const taken = list.some(function (item) {
+        return item.email.toLowerCase() === email && item.email.toLowerCase() !== original;
+    });
+    if (taken) {
+        const error = new Error("duplicate");
+        error.reason = "duplicate";
+        throw error;
+    }
+
+    const next = list.filter(function (item) {
+        return item.email.toLowerCase() !== original;
+    });
+    next.push(data);
+
+    try {
+        saveNotifyList(next);
+    } catch (e) {
+        const error = new Error("storage");
+        error.reason = "storage";
+        throw error;
+    }
+}
+
+function showDone(data, wasEdit) {
+    document.querySelector("#done-badge").textContent = wasEdit ? "✅ 신청 내용 수정 완료" : "✅ 알림 신청 완료";
+    document.querySelector("#done-title").textContent =
+        data.name + "님, " + (wasEdit ? "신청 내용을 수정했어요." : "알림 신청이 완료되었어요.");
+    document.querySelector("#done-email").textContent = data.email;
+    document.querySelector("#done-topic").textContent = topicLabels[data.topic];
+    document.querySelector("#done-frequency").textContent = frequencyLabels[data.frequency];
+    document.querySelector("#done-phone").textContent = data.phone ? data.phone + " 으로도 받아요" : "받지 않음";
+    document.querySelector("#done-wish").textContent = data.wish || "없음";
+
+    notifyForm.hidden = true;
+    notifyDone.hidden = false;
+    notifyDone.dataset.email = data.email;
+}
+
+// submit 이벤트
+function handleNotifySubmit(event) {
+    event.preventDefault();
+    if (isSubmitting) return; // 중복 제출 방지
+
+    // 1) 모든 항목 검사 (숨겨진 휴대폰 칸은 disabled라 제외)
+    const invalid = [];
+    Object.keys(fields).forEach(function (key) {
+        fields[key].touched = true;
+        if (!renderField(key)) invalid.push(key);
+    });
+
+    if (invalid.length > 0) {
+        showSummary(invalid);
+        showSubmitStatus("", "");
+        fields[invalid[0]].el.focus();
+        return; // 조건 미충족 → 제출 차단
+    }
+    formSummary.hidden = true;
+
+    // 2) 신청 중: 진행 문구 + 버튼 비활성화
+    const data = collectForm();
+    const wasEdit = editingEmail !== null;
+    setSubmitting(true);
+    showSubmitStatus("⏳ " + (wasEdit ? "수정 내용을 저장하고 있어요…" : "알림 신청을 처리하고 있어요…"), "pending");
+
+    setTimeout(function () {
+        try {
+            saveApplication(data);
+        } catch (error) {
+            // 3) 실패: 입력 내용은 그대로 두고 다시 시도할 수 있게
+            setSubmitting(false);
+            if (error.reason === "duplicate") {
+                duplicateEmail = data.email.toLowerCase();
+                fields.email.touched = true;
+                renderField("email");
+                fields.email.el.focus();
+                showSubmitStatus("✗ 신청하지 못했어요. 이미 알림을 신청한 이메일이에요. 다른 주소로 고친 뒤 다시 신청해 주세요. (입력한 내용은 그대로 있어요)", "error");
+            } else {
+                showSubmitStatus("✗ 신청하지 못했어요. 이 브라우저에 저장할 수 없는 상태예요. 입력한 내용은 그대로 있으니 잠시 후 다시 시도해 주세요.", "error");
+            }
+            return;
+        }
+
+        // 4) 성공
+        setSubmitting(false);
+        showSubmitStatus("", "");
+        showDone(data, wasEdit);
+    }, 1200);
+}
+
+notifyForm.addEventListener("submit", handleNotifySubmit);
+
+// 다시 작성 / 새로 신청: 입력값·안내 문구·버튼 상태·조건부 영역 모두 초기화
+function afterReset() {
+    editingEmail = null;
+    duplicateEmail = null;
+    Object.keys(fields).forEach(function (key) {
+        fields[key].touched = false;
+    });
+    formSummary.hidden = true;
+    showSubmitStatus("", "");
+    setSubmitting(false);
+    updateSmsArea();
+    Object.keys(fields).forEach(renderField);
+}
+
+notifyForm.addEventListener("reset", function () {
+    // reset 이벤트 직후 값이 비워지므로 다음 순간에 상태를 다시 그림
+    setTimeout(afterReset, 0);
+});
+
+document.querySelector("#btn-notify-new").addEventListener("click", function () {
+    notifyDone.hidden = true;
+    notifyForm.hidden = false;
+    notifyForm.reset();
+    fields.name.el.focus();
+});
+
+// 신청 내용 수정 (교수님 코멘트: 주소를 잘못 입력했을 때 다시 입력하는 경로)
+document.querySelector("#btn-notify-edit").addEventListener("click", function () {
+    editingEmail = notifyDone.dataset.email;
+    duplicateEmail = null;
+    notifyDone.hidden = true;
+    notifyForm.hidden = false;
+    setSubmitting(false);
+    showSubmitStatus("✏️ 신청 내용을 수정하고 있어요. 고친 뒤 '수정 내용 저장'을 눌러 주세요.", "info");
+    Object.keys(fields).forEach(renderField);
+    fields.email.el.focus();
+    fields.email.el.select();
+});
+
+updateSmsArea();
+Object.keys(fields).forEach(renderField);

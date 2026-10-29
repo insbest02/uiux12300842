@@ -1,6 +1,6 @@
 /* =========================================
    Amor AI - CSS
-   3주차 디자인 / 4주차 반응형 / 5·6·7주차·중간고사 기능 스타일
+   3주차 디자인 / 4주차 반응형 / 5·6·7주차·중간고사·9주차 기능 스타일
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -738,6 +738,275 @@ button.danger:hover {
 }
 
 /* =========================================
+   9주차: 답장 복사 + 상황별 예시 표시 (교수님 코멘트 반영)
+   ========================================= */
+.copy-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 0;
+}
+
+.copy-row .copy-button {
+    margin: 0;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.copy-feedback {
+    font-size: 14px;
+    font-weight: bold;
+    word-break: keep-all;
+}
+
+.copy-feedback.success {
+    color: #2b8a3e;
+}
+
+.copy-feedback.error {
+    color: #e03131;
+}
+
+.example-note {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #868e96;
+    word-break: keep-all;
+}
+
+.example-tag {
+    display: inline-block;
+    margin-right: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5f3dc4;
+    background-color: #f3f0ff;
+    border: 1px solid #d0bfff;
+    border-radius: 999px;
+}
+
+/* =========================================
+   9주차: 소식 알림 신청 폼
+   ========================================= */
+#signup {
+    text-align: left;
+}
+
+#notify-form {
+    display: block;
+}
+
+.form-field {
+    margin: 0 0 20px;
+    padding: 0;
+    border: none;
+}
+
+#notify-form label,
+#notify-form legend {
+    display: block;
+    margin: 0 0 6px;
+    padding: 0;
+    font-weight: bold;
+    color: #222222;
+}
+
+#notify-form input[type="text"],
+#notify-form input[type="email"],
+#notify-form input[type="tel"],
+#notify-form select,
+#notify-form textarea {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background-color: #ffffff;
+    border: 1px solid #f4a6b8;
+    border-radius: 6px;
+}
+
+#notify-form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+#notify-form input:disabled {
+    color: #adb5bd;
+    background-color: #f1f3f5;
+    border-color: #dee2e6;
+}
+
+/* 상태: 테두리 색 + 아래 문구(✓/✗)로 함께 구분 */
+#notify-form input.invalid,
+#notify-form select.invalid,
+#notify-form textarea.invalid {
+    border: 2px solid #e03131;
+    outline: none;
+}
+
+#notify-form input.valid,
+#notify-form select.valid,
+#notify-form textarea.valid {
+    border: 2px solid #2f9e44;
+}
+
+.badge-required,
+.badge-optional {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    vertical-align: middle;
+    border-radius: 4px;
+}
+
+.badge-required {
+    color: #d6336c;
+    background-color: #fff0f3;
+}
+
+.badge-optional {
+    color: #868e96;
+    background-color: #f1f3f5;
+}
+
+.help {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #868e96;
+    word-break: keep-all;
+}
+
+.field-status {
+    margin: 4px 0 0;
+    font-size: 14px;
+    word-break: keep-all;
+}
+
+.field-status:empty {
+    display: none;
+}
+
+.field-status.hint {
+    color: #868e96;
+}
+
+.field-status.ok {
+    color: #2b8a3e;
+    font-weight: bold;
+}
+
+.field-status.error {
+    color: #e03131;
+    font-weight: bold;
+}
+
+/* 라디오 · 체크박스 */
+.option-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#notify-form label.option {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 10px 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    background-color: #ffffff;
+    border: 1px solid #f8d0da;
+    border-radius: 8px;
+    cursor: pointer;
+    word-break: keep-all;
+}
+
+#notify-form label.option:has(input:checked) {
+    font-weight: bold;
+    color: #a61e4d;
+    background-color: #fff0f3;
+    border-color: #d6336c;
+}
+
+#notify-form input[type="checkbox"],
+#notify-form input[type="radio"] {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+    padding: 0;
+    accent-color: #d6336c;
+}
+
+/* 조건부 입력 영역 */
+.conditional-area {
+    margin-top: 10px;
+    padding: 14px;
+    background-color: #fff5f7;
+    border-left: 4px solid #f06595;
+    border-radius: 8px;
+}
+
+/* 오류 요약 · 제출 상태 */
+.form-summary {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    font-weight: bold;
+    color: #c92a2a;
+    background-color: #fff5f5;
+    border: 1px solid #ffc9c9;
+    border-radius: 8px;
+    word-break: keep-all;
+}
+
+.submit-status {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: bold;
+    word-break: keep-all;
+}
+
+.submit-status:empty {
+    display: none;
+}
+
+.submit-status.pending {
+    padding: 10px 12px;
+    color: #1864ab;
+    background-color: #e7f5ff;
+    border-radius: 8px;
+}
+
+.submit-status.error {
+    padding: 10px 12px;
+    color: #c92a2a;
+    background-color: #fff5f5;
+    border-radius: 8px;
+}
+
+.submit-status.info {
+    padding: 10px 12px;
+    color: #e8590c;
+    background-color: #fff4e6;
+    border-radius: 8px;
+}
+
+/* 신청 완료 화면 */
+.notify-done {
+    padding: 18px;
+    background-color: #ffffff;
+    border: 2px solid #2f9e44;
+    border-radius: 12px;
+}
+
+/* =========================================
    4주차: 768px 이하 (태블릿·모바일)
    ========================================= */
 @media (max-width: 768px) {
@@ -864,5 +1133,23 @@ button.danger:hover {
     .undo-bar button,
     .saved-empty button {
         width: 100%;
+    }
+
+    /* 9주차: 알림 신청 폼 모바일 */
+    #notify-form {
+        display: block;
+    }
+
+    .option-row {
+        flex-direction: column;
+    }
+
+    #notify-form input[type="checkbox"],
+    #notify-form input[type="radio"] {
+        width: 18px;
+    }
+
+    .copy-row .copy-button {
+        width: auto;
     }
 }
