@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amor AI</title>
+    <title>Amor AI - 연애 답장 고민을 돕는 AI 대화 코치</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+    <!-- 11주차: 키보드 사용자가 메뉴를 건너뛰고 본문으로 바로 이동 -->
+    <a class="skip-link" href="#main">본문 바로가기</a>
 
     <!--
         주요 사용자: 연애 상담이나 대화 조언이 필요한 20~30대
@@ -26,7 +29,7 @@
     -->
     <header class="site-header" id="site-header">
         <div class="header-bar">
-            <a class="brand" href="#about">💗 Amor AI</a>
+            <a class="brand" href="#about"><span aria-hidden="true">💗</span> Amor AI <span class="visually-hidden">처음으로</span></a>
             <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="main-menu">
                 <span class="menu-icon" aria-hidden="true">☰</span>
                 <span class="menu-toggle-text">메뉴 열기</span>
@@ -44,19 +47,21 @@
         </nav>
     </header>
 
+    <main id="main" tabindex="-1">
+
     <!-- 서비스 이름 및 한 줄 소개 -->
-    <section id="about">
-        <h1>Amor AI</h1>
+    <section id="about" aria-labelledby="about-heading">
+        <h1 id="about-heading">Amor AI</h1>
         <p>당신의 연애를 이해하는 AI 대화 코치</p>
 
-        <h3>서비스 소개</h3>
+        <h2 id="about-title">서비스 소개</h2>
         <p>Amor AI는 대화 내용을 분석해 상대방의 마음을 이해하고,
             더 나은 관계를 만들어갈 수 있도록 맞춤형 조언을 제공하는 AI 연애 코칭 서비스입니다.</p>
     </section>
 
     <!-- 주요 기능 3개 -->
-    <section id="features">
-        <h3>주요 기능</h3>
+    <section id="features" aria-labelledby="features-title">
+        <h2 id="features-title">주요 기능</h2>
         <ul>
             <li>대화 내용 분석 및 감정 리포트 제공</li>
             <li>상황별 맞춤 답장 추천</li>
@@ -65,21 +70,22 @@
     </section>
 
     <!-- 6주차: 기능 탭 -->
-    <section id="tabs">
-        <h3>기능 자세히 보기</h3>
+    <section id="tabs" aria-labelledby="tabs-title">
+        <h2 id="tabs-title">기능 자세히 보기</h2>
 
-        <div class="tab-list" role="tablist">
-            <button type="button" class="tab-button active" data-tab="tab-analysis" aria-selected="true">대화 분석</button>
-            <button type="button" class="tab-button" data-tab="tab-reply" aria-selected="false">답장 추천</button>
-            <button type="button" class="tab-button" data-tab="tab-coaching" aria-selected="false">AI 코칭</button>
+        <p class="visually-hidden">왼쪽·오른쪽 방향키로 탭을 바꿀 수 있어요.</p>
+        <div class="tab-list" role="tablist" aria-label="기능 자세히 보기">
+            <button type="button" class="tab-button active" role="tab" id="tab-btn-analysis" data-tab="tab-analysis" aria-controls="tab-analysis" aria-selected="true">대화 분석</button>
+            <button type="button" class="tab-button" role="tab" id="tab-btn-reply" data-tab="tab-reply" aria-controls="tab-reply" aria-selected="false" tabindex="-1">답장 추천</button>
+            <button type="button" class="tab-button" role="tab" id="tab-btn-coaching" data-tab="tab-coaching" aria-controls="tab-coaching" aria-selected="false" tabindex="-1">AI 코칭</button>
         </div>
 
-        <div id="tab-analysis" class="tab-panel active">
+        <div id="tab-analysis" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-analysis" tabindex="0">
             <p>대화 내용을 붙여넣으면 AI가 두 사람의 감정 흐름을 분석해 리포트로 보여줘요.</p>
             <p class="report">예시 리포트 · 설렘 72% · 불안 18% · 서운함 10%</p>
         </div>
 
-        <div id="tab-reply" class="tab-panel">
+        <div id="tab-reply" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-reply" tabindex="0">
             <p>지금 상황을 고르면 어울리는 답장을 추천해 드려요.</p>
             <label for="situation">지금 우리 관계는?</label>
             <select id="situation">
@@ -88,14 +94,14 @@
                 <option value="dating">연애 중</option>
                 <option value="fight">다툰 후</option>
             </select>
-            <p id="reply-box" class="reply-box">상황을 선택하면 상황별 예시 답장을 보여드려요.</p>
+            <p id="reply-box" class="reply-box" aria-live="polite">상황을 선택하면 상황별 예시 답장을 보여드려요.</p>
             <div class="copy-row" id="reply-copy-row" hidden>
-                <button type="button" class="secondary copy-button" id="btn-copy-tab">답장 복사</button>
+                <button type="button" class="secondary copy-button" id="btn-copy-tab">예시 답장 복사</button>
                 <span class="copy-feedback" id="copy-feedback-tab" aria-live="polite"></span>
             </div>
         </div>
 
-        <div id="tab-coaching" class="tab-panel">
+        <div id="tab-coaching" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-coaching" tabindex="0">
             <p>관계를 더 좋게 만드는 AI 코칭 팁이에요.</p>
             <ul>
                 <li>상대의 말을 요약해서 되물어 보세요. "그래서 속상했구나"</li>
@@ -113,10 +119,10 @@
         완료 조건: 완료 화면에 닉네임과 추천 답장이 표시되면 완료
         흐름: 시작 -> 입력 -> 선택 -> 확인 -> 완료 (-> 중간고사: 보관함에 저장)
     -->
-    <section id="consult">
-        <h3>AI 답장 상담</h3>
+    <section id="consult" aria-labelledby="consult-title">
+        <h2 id="consult-title">AI 답장 상담</h2>
 
-        <ol class="progress">
+        <ol class="progress" aria-label="상담 진행 단계">
             <li>시작</li>
             <li>입력</li>
             <li>선택</li>
@@ -126,7 +132,7 @@
 
         <!-- ① 시작 -->
         <div class="step-panel active" data-step="1">
-            <p class="step-title">보낼 답장이 고민되나요?</p>
+            <h3 class="step-title" tabindex="-1">보낼 답장이 고민되나요?</h3>
             <p class="step-desc">고민을 적고 지금 상황을 고르면, Amor AI가 보낼 답장을 추천해 드려요.</p>
             <div class="step-actions">
                 <button type="button" id="btn-start">상담 시작하기</button>
@@ -135,38 +141,38 @@
 
         <!-- ② 입력 -->
         <div class="step-panel" data-step="2">
-            <p class="step-title">고민을 알려주세요</p>
+            <h3 class="step-title" tabindex="-1">고민을 알려주세요</h3>
             <div class="field">
                 <label for="consult-nickname">닉네임 (필수)</label>
-                <input type="text" id="consult-nickname" placeholder="예) 아모르">
+                <input type="text" id="consult-nickname" placeholder="예) 아모르" autocomplete="nickname" aria-describedby="nickname-error">
                 <p class="field-error" id="nickname-error"></p>
             </div>
             <div class="field">
                 <label for="consult-concern">고민 내용 (필수, 10자 이상)</label>
-                <textarea id="consult-concern" placeholder="예) 어제 연락이 늦었는데 상대가 서운해하는 것 같아요."></textarea>
-                <p class="char-count" id="concern-count"></p>
+                <textarea id="consult-concern" placeholder="예) 어제 연락이 늦었는데 상대가 서운해하는 것 같아요." aria-describedby="concern-count concern-error"></textarea>
+                <p class="char-count" id="concern-count" aria-live="polite"></p>
                 <p class="field-error" id="concern-error"></p>
             </div>
             <div class="step-actions">
-                <button type="button" id="btn-to-choice">다음</button>
+                <button type="button" id="btn-to-choice">다음: 상황 고르기</button>
             </div>
         </div>
 
         <!-- ③ 선택 -->
         <div class="step-panel" data-step="3">
-            <p class="step-title">상황과 답장 톤을 골라주세요</p>
-            <div class="field">
-                <label>지금 관계 상황 (필수)</label>
+            <h3 class="step-title" tabindex="-1">상황과 답장 톤을 골라주세요</h3>
+            <fieldset class="field" aria-describedby="relation-error">
+                <legend>지금 관계 상황 (필수)</legend>
                 <div class="choices">
                     <label class="choice"><input type="radio" name="relation" value="some"> 썸 타는 중</label>
                     <label class="choice"><input type="radio" name="relation" value="dating"> 연애 중</label>
                     <label class="choice"><input type="radio" name="relation" value="fight"> 다툰 후</label>
                 </div>
                 <p class="field-error" id="relation-error"></p>
-            </div>
+            </fieldset>
             <div class="field">
                 <label for="consult-tone">답장 톤 (필수)</label>
-                <select id="consult-tone">
+                <select id="consult-tone" aria-describedby="tone-error">
                     <option value="">톤을 선택하세요</option>
                     <option value="sweet">다정하게</option>
                     <option value="honest">솔직하게</option>
@@ -175,14 +181,14 @@
                 <p class="field-error" id="tone-error"></p>
             </div>
             <div class="step-actions">
-                <button type="button" class="secondary" id="btn-back-input">이전</button>
-                <button type="button" id="btn-to-confirm">다음</button>
+                <button type="button" class="secondary" id="btn-back-input">이전: 고민 입력</button>
+                <button type="button" id="btn-to-confirm">다음: 내용 확인</button>
             </div>
         </div>
 
         <!-- ④ 확인 -->
         <div class="step-panel" data-step="4">
-            <p class="step-title">입력한 내용을 확인해 주세요</p>
+            <h3 class="step-title" tabindex="-1">입력한 내용을 확인해 주세요</h3>
             <dl class="summary">
                 <div><dt>닉네임</dt><dd id="summary-nickname"></dd></div>
                 <div><dt>고민</dt><dd id="summary-concern"></dd></div>
@@ -191,28 +197,28 @@
             </dl>
             <div class="step-actions">
                 <button type="button" class="secondary" id="btn-edit-input">고민 수정</button>
-                <button type="button" class="secondary" id="btn-back-choice">이전</button>
-                <button type="button" id="btn-complete">추천 받기</button>
+                <button type="button" class="secondary" id="btn-back-choice">이전: 상황 고르기</button>
+                <button type="button" id="btn-complete">추천 답장 받기</button>
             </div>
         </div>
 
         <!-- ⑤ 완료 + 중간고사: 보관함에 저장 -->
         <div class="step-panel" data-step="5">
             <span class="done-badge">✅ 상담 완료</span>
-            <p class="step-title" id="result-title"></p>
+            <h3 class="step-title" id="result-title" tabindex="-1"></h3>
             <p class="example-note"><span class="example-tag">상황별 예시</span> 실제 대화를 분석한 결과가 아니라, 고른 상황·톤에 맞춘 예시 문장이에요.</p>
             <p class="result-reply" id="result-reply"></p>
             <p class="result-meta" id="result-meta"></p>
             <div class="copy-row">
-                <button type="button" class="secondary copy-button" id="btn-copy-result">답장 복사</button>
+                <button type="button" class="secondary copy-button" id="btn-copy-result">추천 답장 복사</button>
                 <span class="copy-feedback" id="copy-feedback-result" aria-live="polite"></span>
             </div>
 
             <div class="save-box">
                 <label for="save-memo">메모 (선택, 20자 이내)</label>
-                <input type="text" id="save-memo" placeholder="예) 내일 아침에 보내기">
-                <p class="field-error" id="memo-error"></p>
-                <p class="save-feedback" id="save-feedback"></p>
+                <input type="text" id="save-memo" placeholder="예) 내일 아침에 보내기" aria-describedby="memo-error save-feedback">
+                <p class="field-error" id="memo-error" aria-live="polite"></p>
+                <p class="save-feedback" id="save-feedback" aria-live="polite"></p>
             </div>
 
             <div class="step-actions">
@@ -228,8 +234,8 @@
         핵심 행동: 저장한 답장을 키워드·관계 상황으로 찾아 열기, 다시 상담, 삭제
         흐름: 7주차 완료 화면에서 저장 -> 보관함 목록 -> 찾기 -> 열기 -> 다시 상담 또는 삭제(되돌리기)
     -->
-    <section id="saved">
-        <h3>내 답장 보관함</h3>
+    <section id="saved" aria-labelledby="saved-title">
+        <h2 id="saved-title">내 답장 보관함</h2>
         <p class="step-desc">상담에서 받은 답장을 저장해 두고, 보낼 때 찾아서 다시 열어 보세요.</p>
 
         <div class="saved-tools">
@@ -253,13 +259,13 @@
         <p class="saved-count" id="saved-count" aria-live="polite"></p>
 
         <div class="undo-bar" id="undo-bar" hidden>
-            <span id="undo-text"></span>
-            <button type="button" class="secondary" id="btn-undo">되돌리기</button>
+            <span id="undo-text" role="status"></span>
+            <button type="button" class="secondary" id="btn-undo">삭제 되돌리기</button>
         </div>
 
-        <div class="saved-detail" id="saved-detail" hidden>
-            <p class="saved-detail-label">열어 본 답장</p>
-            <p class="step-title" id="detail-memo"></p>
+        <div class="saved-detail" id="saved-detail" role="region" aria-label="열어 본 답장" hidden>
+            <p class="saved-detail-label" aria-hidden="true">열어 본 답장</p>
+            <h3 class="step-title" id="detail-memo" tabindex="-1"></h3>
             <p class="saved-meta" id="detail-meta"></p>
             <dl class="summary">
                 <div><dt>닉네임</dt><dd id="detail-nickname"></dd></div>
@@ -268,12 +274,12 @@
             <p class="example-note"><span class="example-tag">상황별 예시</span></p>
             <p class="result-reply" id="detail-reply"></p>
             <div class="copy-row">
-                <button type="button" class="secondary copy-button" id="btn-copy-detail">답장 복사</button>
+                <button type="button" class="secondary copy-button" id="btn-copy-detail">저장한 답장 복사</button>
                 <span class="copy-feedback" id="copy-feedback-detail" aria-live="polite"></span>
             </div>
             <div class="step-actions">
-                <button type="button" class="secondary" id="btn-detail-close">닫기</button>
-                <button type="button" class="danger" id="btn-detail-delete">삭제</button>
+                <button type="button" class="secondary" id="btn-detail-close">상세 닫기</button>
+                <button type="button" class="danger" id="btn-detail-delete">이 답장 삭제</button>
                 <button type="button" id="btn-detail-reuse">이 내용으로 다시 상담</button>
             </div>
         </div>
@@ -283,12 +289,12 @@
             <button type="button" class="secondary" id="saved-empty-action"></button>
         </div>
 
-        <ul class="saved-list" id="saved-list"></ul>
+        <ul class="saved-list" id="saved-list" aria-label="저장한 답장 목록"></ul>
     </section>
 
     <!-- 이용 방법 3단계 -->
-    <section id="howto">
-        <h3>이용 방법</h3>
+    <section id="howto" aria-labelledby="howto-title">
+        <h2 id="howto-title">이용 방법</h2>
         <ol>
             <li>고민이나 대화 내용을 입력합니다.</li>
             <li>AI가 대화를 분석하고 감정 상태를 알려줍니다.</li>
@@ -296,9 +302,14 @@
         </ol>
     </section>
 
-    <!-- 이미지와 대체 텍스트 -->
-    <section>
-        <img src="amor-ai.png" alt="Amor AI 앱의 대화 분석 화면 예시" style="max-width: 300px; width: 100%;">
+    <!-- 이미지와 대체 텍스트 (11주차: 화면에 담긴 정보를 문장으로 설명) -->
+    <section aria-label="Amor AI 앱 화면 미리보기">
+        <figure class="app-preview">
+            <img src="amor-ai.png"
+                alt="Amor AI 앱 화면 예시. 상대와 주고받은 대화 말풍선 아래에 AI 코치가 '상대의 감정은 충분히 이해돼요'처럼 마음을 풀어 주는 답장을 제안하고, 맨 아래 감정 분석 카드에는 지금 관계가 '조금 지친 상태'라는 결과와 최근 설렘·스트레스 변화 그래프가 보입니다."
+                style="max-width: 300px; width: 100%;">
+            <figcaption>Amor AI 앱에서 대화를 분석하고 답장을 제안하는 화면 예시</figcaption>
+        </figure>
     </section>
 
     <!--
@@ -308,8 +319,8 @@
                   문자 알림(체크 시 휴대폰 번호 입력), 바라는 점(선택, 100자 이내), 동의(필수)
         제출: submit 이벤트 -> 검사 -> 신청 중(버튼 비활성화) -> 성공 / 실패(입력 유지, 다시 시도)
     -->
-    <section id="signup">
-        <h3>Amor AI 소식 알림 신청</h3>
+    <section id="signup" aria-labelledby="signup-title">
+        <h2 id="signup-title">Amor AI 소식 알림 신청</h2>
         <p class="step-desc">새 기능과 연애 코칭 팁을 알려 드려요. 계정이 만들어지는 것은 아니며, 신청한 뒤에도 내용을 수정할 수 있어요.</p>
 
         <form id="notify-form" novalidate>
@@ -389,7 +400,7 @@
 
         <div class="notify-done" id="notify-done" hidden>
             <span class="done-badge" id="done-badge">✅ 알림 신청 완료</span>
-            <p class="step-title" id="done-title"></p>
+            <h3 class="step-title" id="done-title" tabindex="-1"></h3>
             <dl class="summary">
                 <div><dt>이메일</dt><dd id="done-email"></dd></div>
                 <div><dt>받을 소식</dt><dd id="done-topic"></dd></div>
@@ -403,6 +414,8 @@
             </div>
         </div>
     </section>
+
+    </main>
 
     <script src="script.js"></script>
 </body>

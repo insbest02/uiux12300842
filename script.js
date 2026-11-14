@@ -7,7 +7,15 @@
 // 중간고사: 내 답장 보관함 (저장 → 찾기 → 열기·다시 상담 → 삭제·되돌리기)
 // 9주차: 소식 알림 신청 폼 (조건부 입력, 실시간 검증, 제출 상태) + 답장 복사
 // 10주차: 현재 위치 메뉴(aria-current), 모바일 메뉴(aria-expanded), 보관함 필터 버튼(aria-pressed)
+// 11주차: 접근성 - 탭 방향키, 단계 이동 시 초점 이동, 오류-입력칸 연결(aria-invalid), 버튼 이름, 움직임 줄이기
 // =========================================
+
+
+// 11주차: '움직임 줄이기' 설정을 켠 사용자에게는 부드러운 스크롤 대신 바로 이동
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+function scrollMode() {
+    return reduceMotion.matches ? "auto" : "smooth";
+}
 
 
 // -----------------------------------------
@@ -21,6 +29,7 @@ function openTab(targetId) {
     tabButtons.forEach(function (button) {
         button.classList.remove("active");
         button.setAttribute("aria-selected", "false");
+        button.setAttribute("tabindex", "-1");   // 11주차: 선택 안 된 탭은 Tab 순서에서 제외
     });
     tabPanels.forEach(function (panel) {
         panel.classList.remove("active");
@@ -30,12 +39,26 @@ function openTab(targetId) {
     const selectedButton = document.querySelector('.tab-button[data-tab="' + targetId + '"]');
     selectedButton.classList.add("active");
     selectedButton.setAttribute("aria-selected", "true");
+    selectedButton.removeAttribute("tabindex");
     document.querySelector("#" + targetId).classList.add("active");
 }
 
-tabButtons.forEach(function (button) {
+tabButtons.forEach(function (button, index) {
     button.addEventListener("click", function () {
         openTab(button.dataset.tab);
+    });
+
+    // 11주차: ←/→ 로 이전·다음 탭, Home/End 로 처음·마지막 탭
+    button.addEventListener("keydown", function (event) {
+        let next = null;
+        if (event.key === "ArrowRight") next = (index + 1) % tabButtons.length;
+        if (event.key === "ArrowLeft") next = (index - 1 + tabButtons.length) % tabButtons.length;
+        if (event.key === "Home") next = 0;
+        if (event.key === "End") next = tabButtons.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        openTab(tabButtons[next].dataset.tab);
+        tabButtons[next].focus();
     });
 });
 
@@ -111,25 +134,44 @@ const consultReplies = {
 };
 
 // 단계 이동: 해당 단계 화면만 보여주고 진행 표시 갱신
-function goToStep(step) {
+// 11주차: moveFocus가 true면 새 단계의 제목으로 키보드 초점을 옮겨 화면이 바뀐 것을 알림
+function goToStep(step, moveFocus) {
+    let activePanel = null;
     stepPanels.forEach(function (panel) {
-        panel.classList.toggle("active", Number(panel.dataset.step) === step);
+        const isActive = Number(panel.dataset.step) === step;
+        panel.classList.toggle("active", isActive);
+        if (isActive) activePanel = panel;
     });
     progressItems.forEach(function (item, index) {
         item.classList.toggle("active", index + 1 === step);
         item.classList.toggle("done", index + 1 < step);
+        if (index + 1 === step) {
+            item.setAttribute("aria-current", "step");
+        } else {
+            item.removeAttribute("aria-current");
+        }
     });
+    if (moveFocus !== false && activePanel) {
+        const title = activePanel.querySelector(".step-title");
+        if (title) title.focus();
+    }
 }
 
 // 오류 표시 / 지우기
 function setError(field, errorEl, text) {
-    errorEl.textContent = text;
-    if (field) field.classList.add("invalid");
+    errorEl.textContent = "✗ " + text;   // 11주차: 색뿐 아니라 기호로도 오류 표시
+    if (field) {
+        field.classList.add("invalid");
+        field.setAttribute("aria-invalid", "true");
+    }
 }
 
 function clearError(field, errorEl) {
     errorEl.textContent = "";
-    if (field) field.classList.remove("invalid");
+    if (field) {
+        field.classList.remove("invalid");
+        field.removeAttribute("aria-invalid");
+    }
 }
 
 function getSelectedRelation() {
@@ -187,6 +229,12 @@ function validateChoiceStep() {
     } else {
         clearError(toneSelect, toneError);
     }
+
+    // 11주차: 키보드 사용자를 고쳐야 할 첫 항목으로 안내
+    if (!valid) {
+        if (getSelectedRelation() === "") relationInputs[0].focus();
+        else toneSelect.focus();
+    }
     return valid;
 }
 
@@ -228,7 +276,12 @@ function showResult() {
 // 고민 글자 수 실시간 표시
 function updateConcernCount() {
     const length = concernInput.value.trim().length;
-    concernCount.textContent = length + "자 / " + MIN_CONCERN + "자 이상";
+    // 11주차: 충족 여부를 색뿐 아니라 문구로도 안내
+    if (length >= MIN_CONCERN) {
+        concernCount.textContent = "✓ " + length + "자 · " + MIN_CONCERN + "자 이상 조건 충족";
+    } else {
+        concernCount.textContent = length + "자 / " + MIN_CONCERN + "자 이상 (" + (MIN_CONCERN - length) + "자 더 필요해요)";
+    }
     concernCount.classList.toggle("enough", length >= MIN_CONCERN);
 }
 
@@ -305,7 +358,7 @@ toneSelect.addEventListener("change", function () {
 });
 
 updateConcernCount();
-goToStep(1);
+goToStep(1, false);
 
 
 
@@ -493,6 +546,11 @@ function renderSaved() {
     }
 }
 
+// 11주차: 스크린리더가 "열기" 버튼이 어떤 답장의 것인지 알 수 있도록 이름 만들기
+function cardName(item) {
+    return "'" + (item.memo || item.reply.slice(0, 15) + "…") + "' (" + relationLabels[item.relation] + ")";
+}
+
 function createCard(item) {
     const li = document.createElement("li");
     li.className = "saved-card" + (item.id === openedId ? " opened" : "");
@@ -516,12 +574,15 @@ function createCard(item) {
     openButton.type = "button";
     openButton.className = "secondary";
     openButton.textContent = item.id === openedId ? "열려 있음" : "열기";
+    openButton.dataset.openId = item.id;
+    openButton.setAttribute("aria-label", cardName(item) + " 답장 " + (item.id === openedId ? "(열려 있음)" : "열기"));
     openButton.addEventListener("click", function () { openDetail(item.id); });
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
     deleteButton.className = "danger";
     deleteButton.textContent = "삭제";
+    deleteButton.setAttribute("aria-label", cardName(item) + " 답장 삭제");
     deleteButton.addEventListener("click", function () { deleteReply(item.id); });
 
     actions.append(openButton, deleteButton);
@@ -545,7 +606,19 @@ function openDetail(id) {
     savedDetail.hidden = false;
 
     renderSaved();
-    savedDetail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    savedDetail.scrollIntoView({ behavior: scrollMode(), block: "nearest" });
+    document.querySelector("#detail-memo").focus({ preventScroll: true }); // 11주차
+}
+
+// 11주차: 목록 카드의 '열기' 버튼으로 초점 되돌리기
+function focusCardButton(id) {
+    const button = savedList.querySelector('button[data-open-id="' + id + '"]');
+    if (button) {
+        button.focus();
+    } else {
+        document.querySelector("#saved-title").setAttribute("tabindex", "-1");
+        document.querySelector("#saved-title").focus();
+    }
 }
 
 function closeDetail() {
@@ -573,7 +646,7 @@ function reuseReply() {
 
     fillSummary();
     goToStep(4);
-    document.querySelector("#consult").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#consult").scrollIntoView({ behavior: scrollMode(), block: "start" });
 }
 
 // ---- 삭제 / 되돌리기 ----
@@ -596,8 +669,9 @@ function deleteReply(id) {
     syncSaveButton();
 
     const name = item.memo || item.reply.slice(0, 12) + "…";
-    undoText.textContent = "'" + name + "' 답장을 삭제했어요.";
+    undoText.textContent = "'" + name + "' 답장을 삭제했어요. 실수였다면 되돌릴 수 있어요.";
     undoBar.hidden = false;
+    document.querySelector("#btn-undo").focus(); // 11주차: 바로 되돌릴 수 있게 초점 이동
 }
 
 function undoDelete() {
@@ -605,10 +679,12 @@ function undoDelete() {
 
     const index = Math.min(lastDeleted.index, savedReplies.length);
     savedReplies.splice(index, 0, lastDeleted.item);
+    const restoredId = lastDeleted.item.id;
     persistSaved();
     hideUndo();
     renderSaved();
     syncSaveButton();
+    focusCardButton(restoredId); // 11주차: 복구된 카드로 초점 이동
 }
 
 // ---- 이벤트 연결 ----
@@ -648,13 +724,15 @@ savedEmptyAction.addEventListener("click", function () {
         renderSaved();
         savedSearch.focus();
     } else {
-        document.querySelector("#consult").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.querySelector("#consult").scrollIntoView({ behavior: scrollMode(), block: "start" });
     }
 });
 
 document.querySelector("#btn-detail-close").addEventListener("click", function () {
+    const id = openedId;
     closeDetail();
     renderSaved();
+    focusCardButton(id); // 11주차: 닫으면 원래 누른 카드로 초점 복귀
 });
 
 document.querySelector("#btn-detail-delete").addEventListener("click", function () {

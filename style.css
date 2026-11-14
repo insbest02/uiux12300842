@@ -1,6 +1,6 @@
 /* =========================================
    Amor AI - CSS
-   3주차 디자인 / 4주차 반응형 / 5·6·7·9·10주차·중간고사 기능 스타일
+   3주차 디자인 / 4주차 반응형 / 5·6·7·9·10주차·중간고사 기능 / 11주차 접근성
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -46,7 +46,7 @@ body {
 .brand {
     font-size: 18px;
     font-weight: bold;
-    color: #d6336c;
+    color: #c2255c;
     text-decoration: none;
     white-space: nowrap;
 }
@@ -71,28 +71,28 @@ body {
     padding: 8px 12px;
     font-size: 15px;
     font-weight: bold;
-    color: #868e96;
+    color: #5c636a;
     text-decoration: none;
     white-space: nowrap;
     border-radius: 999px;
 }
 
 .menu a:hover {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
 }
 
 .menu a:focus-visible,
 .menu-toggle:focus-visible,
 .filter-button:focus-visible {
-    outline: 3px solid #f783ac;
+    outline: 3px solid #1c7ed6;
     outline-offset: 2px;
 }
 
 /* 현재 위치 메뉴: 배경색 + 글자색 + 앞 점 표시로 구분 */
 .menu a.current {
     color: #ffffff;
-    background-color: #d6336c;
+    background-color: #c2255c;
 }
 
 .menu a.current::before {
@@ -121,7 +121,7 @@ section {
 h1 {
     margin: 0 0 8px;
     font-size: 40px;
-    color: #d6336c;
+    color: #c2255c;
     text-align: center;
 }
 
@@ -129,12 +129,12 @@ h1 {
 h1 + p {
     margin: 0 0 24px;
     font-size: 18px;
-    color: #868e96;
+    color: #5c636a;
     text-align: center;
 }
 
 /* 영역 제목 */
-h3 {
+h2 {
     margin: 0 0 16px;
     padding-left: 12px;
     font-size: 22px;
@@ -198,7 +198,7 @@ img {
     text-align: center;
 }
 
-#signup h3 {
+#signup h2 {
     display: inline-block;
 }
 
@@ -213,7 +213,7 @@ input {
     max-width: 320px;
     padding: 10px 12px;
     font-size: 15px;
-    border: 1px solid #f4a6b8;
+    border: 1px solid #cc5f80;
     border-radius: 6px;
 }
 
@@ -223,7 +223,7 @@ button {
     font-size: 15px;
     font-weight: bold;
     color: #ffffff;
-    background-color: #d6336c;
+    background-color: #c2255c;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -243,38 +243,38 @@ button:hover {
 }
 
 .message.hint {
-    color: #868e96;
+    color: #5c636a;
     font-weight: normal;
 }
 
 .message.error {
-    color: #e03131;
+    color: #c92a2a;
 }
 
 .message.ok {
-    color: #2b8a3e;
+    color: #2f6f3a;
 }
 
 .message.success {
     padding: 12px;
-    color: #2b8a3e;
+    color: #2f6f3a;
     background-color: #ebfbee;
     border-radius: 8px;
 }
 
 input.invalid {
-    border: 2px solid #e03131;
-    outline: none;
+    border: 2px solid #c92a2a;
 }
 
 input.valid {
-    border: 2px solid #2f9e44;
-    outline: none;
+    border: 2px solid #2f6f3a;
 }
 
 button:disabled,
 button:disabled:hover {
-    background-color: #adb5bd;
+    color: #495057;
+    background-color: #e9ecef;
+    border: 1px dashed #5c636a;
     cursor: not-allowed;
 }
 
@@ -293,22 +293,22 @@ button:disabled:hover {
     margin: 0;
     padding: 12px 8px;
     font-size: 15px;
-    color: #868e96;
+    color: #5c636a;
     background-color: transparent;
     border-bottom: 3px solid transparent;
     border-radius: 8px 8px 0 0;
 }
 
 .tab-button:hover {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
 }
 
 /* 선택된 탭 */
 .tab-button.active {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
-    border-bottom: 3px solid #d6336c;
+    border-bottom: 3px solid #c2255c;
 }
 
 /* 선택된 탭의 내용만 보이기 */
@@ -342,7 +342,7 @@ select {
     max-width: 320px;
     padding: 10px 12px;
     font-size: 15px;
-    border: 1px solid #f4a6b8;
+    border: 1px solid #cc5f80;
     border-radius: 6px;
     background-color: #ffffff;
 }
@@ -350,7 +350,7 @@ select {
 .reply-box {
     margin-top: 14px;
     padding: 14px 16px;
-    color: #868e96;
+    color: #5c636a;
     background-color: #f8f9fa;
     border-left: 5px solid #ced4da;
     border-radius: 8px;
@@ -395,15 +395,23 @@ select {
     padding: 8px 4px;
     font-size: 13px;
     text-align: center;
-    color: #adb5bd;
+    color: #5c636a;
     background-color: #f8f9fa;
     border-bottom: 3px solid #dee2e6;
     border-radius: 6px 6px 0 0;
     word-break: keep-all;
 }
 
+.progress li.done::before {
+    content: "✓ ";
+}
+
+.progress li.active::before {
+    content: "● ";
+}
+
 .progress li.done {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
     border-bottom-color: #f4a6b8;
 }
@@ -411,7 +419,7 @@ select {
 .progress li.active {
     color: #ffffff;
     font-weight: bold;
-    background-color: #d6336c;
+    background-color: #c2255c;
     border-bottom-color: #a61e4d;
 }
 
@@ -432,7 +440,7 @@ select {
 }
 
 .step-desc {
-    color: #868e96;
+    color: #5c636a;
 }
 
 .field {
@@ -448,7 +456,7 @@ select {
     padding: 10px 12px;
     font-size: 15px;
     font-family: inherit;
-    border: 1px solid #f4a6b8;
+    border: 1px solid #cc5f80;
     border-radius: 6px;
 }
 
@@ -458,26 +466,25 @@ select {
 }
 
 #consult .invalid {
-    border: 2px solid #e03131;
-    outline: none;
+    border: 2px solid #c92a2a;
 }
 
 .char-count {
     margin: 6px 0 0;
     font-size: 13px;
     text-align: right;
-    color: #adb5bd;
+    color: #5c636a;
 }
 
 .char-count.enough {
-    color: #2b8a3e;
+    color: #2f6f3a;
 }
 
 .field-error {
     margin: 6px 0 0;
     font-size: 14px;
     font-weight: bold;
-    color: #e03131;
+    color: #c92a2a;
 }
 
 .field-error:empty {
@@ -507,14 +514,14 @@ select {
 #consult .choice input[type="radio"] {
     width: auto;
     margin: 0;
-    accent-color: #d6336c;
+    accent-color: #c2255c;
 }
 
 .choice:has(input:checked) {
     font-weight: bold;
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
-    border: 2px solid #d6336c;
+    border: 2px solid #c2255c;
 }
 
 /* 확인 화면 요약 */
@@ -554,7 +561,7 @@ select {
     padding: 4px 12px;
     font-size: 14px;
     font-weight: bold;
-    color: #2b8a3e;
+    color: #2f6f3a;
     background-color: #ebfbee;
     border-radius: 999px;
 }
@@ -571,7 +578,7 @@ select {
 
 .result-meta {
     font-size: 14px;
-    color: #868e96;
+    color: #5c636a;
 }
 
 /* 이전 / 다음 버튼 줄 */
@@ -588,9 +595,9 @@ select {
 }
 
 button.secondary {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #ffffff;
-    border: 1px solid #d6336c;
+    border: 1px solid #c2255c;
 }
 
 button.secondary:hover {
@@ -619,7 +626,7 @@ section,
 }
 
 #consult .save-box input[type="text"]:disabled {
-    color: #868e96;
+    color: #5c636a;
     background-color: #f1f3f5;
 }
 
@@ -635,14 +642,14 @@ section,
 
 .save-feedback.success {
     padding: 10px 12px;
-    color: #2b8a3e;
+    color: #2f6f3a;
     background-color: #ebfbee;
     border-radius: 6px;
 }
 
 .save-feedback.warn {
     padding: 10px 12px;
-    color: #e8590c;
+    color: #a33d0a;
     background-color: #fff4e6;
     border-radius: 6px;
 }
@@ -663,14 +670,14 @@ section,
     padding: 10px 12px;
     font-size: 15px;
     font-family: inherit;
-    border: 1px solid #f4a6b8;
+    border: 1px solid #cc5f80;
     border-radius: 6px;
 }
 
 .saved-count {
     margin: 14px 0 10px;
     font-size: 14px;
-    color: #868e96;
+    color: #5c636a;
 }
 
 /* 목록 */
@@ -695,13 +702,13 @@ section,
 
 .saved-card.opened {
     background-color: #fff0f3;
-    border: 2px solid #d6336c;
+    border: 2px solid #c2255c;
 }
 
 .saved-meta {
     margin: 0 0 4px;
     font-size: 13px;
-    color: #868e96;
+    color: #5c636a;
 }
 
 .saved-memo {
@@ -713,7 +720,7 @@ section,
 
 .saved-memo.empty {
     font-weight: normal;
-    color: #adb5bd;
+    color: #5c636a;
 }
 
 .saved-preview {
@@ -737,21 +744,21 @@ section,
 }
 
 button.danger {
-    color: #e03131;
+    color: #c92a2a;
     background-color: #ffffff;
-    border: 1px solid #e03131;
+    border: 1px solid #c92a2a;
 }
 
 button.danger:hover {
     color: #ffffff;
-    background-color: #e03131;
+    background-color: #c92a2a;
 }
 
 /* 결과 없음 / 비어 있음 안내 */
 .saved-empty {
     padding: 24px 16px;
     text-align: center;
-    color: #868e96;
+    color: #5c636a;
     background-color: #f8f9fa;
     border: 1px dashed #ced4da;
     border-radius: 10px;
@@ -767,7 +774,7 @@ button.danger:hover {
     margin-bottom: 16px;
     padding: 18px;
     background-color: #ffffff;
-    border: 2px solid #d6336c;
+    border: 2px solid #c2255c;
     border-radius: 12px;
 }
 
@@ -775,7 +782,7 @@ button.danger:hover {
     margin: 0 0 4px;
     font-size: 13px;
     font-weight: bold;
-    color: #d6336c;
+    color: #c2255c;
 }
 
 /* 삭제 후 되돌리기 */
@@ -823,17 +830,17 @@ button.danger:hover {
 }
 
 .copy-feedback.success {
-    color: #2b8a3e;
+    color: #2f6f3a;
 }
 
 .copy-feedback.error {
-    color: #e03131;
+    color: #c92a2a;
 }
 
 .example-note {
     margin: 0 0 8px;
     font-size: 13px;
-    color: #868e96;
+    color: #5c636a;
     word-break: keep-all;
 }
 
@@ -887,7 +894,7 @@ button.danger:hover {
     font-size: 15px;
     font-family: inherit;
     background-color: #ffffff;
-    border: 1px solid #f4a6b8;
+    border: 1px solid #cc5f80;
     border-radius: 6px;
 }
 
@@ -897,7 +904,7 @@ button.danger:hover {
 }
 
 #notify-form input:disabled {
-    color: #adb5bd;
+    color: #5c636a;
     background-color: #f1f3f5;
     border-color: #dee2e6;
 }
@@ -906,14 +913,13 @@ button.danger:hover {
 #notify-form input.invalid,
 #notify-form select.invalid,
 #notify-form textarea.invalid {
-    border: 2px solid #e03131;
-    outline: none;
+    border: 2px solid #c92a2a;
 }
 
 #notify-form input.valid,
 #notify-form select.valid,
 #notify-form textarea.valid {
-    border: 2px solid #2f9e44;
+    border: 2px solid #2f6f3a;
 }
 
 .badge-required,
@@ -928,19 +934,19 @@ button.danger:hover {
 }
 
 .badge-required {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
 }
 
 .badge-optional {
-    color: #868e96;
+    color: #5c636a;
     background-color: #f1f3f5;
 }
 
 .help {
     margin: 6px 0 0;
     font-size: 13px;
-    color: #868e96;
+    color: #5c636a;
     word-break: keep-all;
 }
 
@@ -955,16 +961,16 @@ button.danger:hover {
 }
 
 .field-status.hint {
-    color: #868e96;
+    color: #5c636a;
 }
 
 .field-status.ok {
-    color: #2b8a3e;
+    color: #2f6f3a;
     font-weight: bold;
 }
 
 .field-status.error {
-    color: #e03131;
+    color: #c92a2a;
     font-weight: bold;
 }
 
@@ -994,7 +1000,7 @@ button.danger:hover {
     font-weight: bold;
     color: #a61e4d;
     background-color: #fff0f3;
-    border-color: #d6336c;
+    border-color: #c2255c;
 }
 
 #notify-form input[type="checkbox"],
@@ -1004,7 +1010,7 @@ button.danger:hover {
     height: 18px;
     margin: 2px 0 0;
     padding: 0;
-    accent-color: #d6336c;
+    accent-color: #c2255c;
 }
 
 /* 조건부 입력 영역 */
@@ -1055,7 +1061,7 @@ button.danger:hover {
 
 .submit-status.info {
     padding: 10px 12px;
-    color: #e8590c;
+    color: #a33d0a;
     background-color: #fff4e6;
     border-radius: 8px;
 }
@@ -1064,7 +1070,7 @@ button.danger:hover {
 .notify-done {
     padding: 18px;
     background-color: #ffffff;
-    border: 2px solid #2f9e44;
+    border: 2px solid #2f6f3a;
     border-radius: 12px;
 }
 
@@ -1098,7 +1104,7 @@ button.danger:hover {
 }
 
 .filter-button:hover {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #fff0f3;
     border-color: #f4a6b8;
 }
@@ -1107,8 +1113,8 @@ button.danger:hover {
 .filter-button.selected,
 .filter-button.selected:hover {
     color: #ffffff;
-    background-color: #d6336c;
-    border-color: #d6336c;
+    background-color: #c2255c;
+    border-color: #c2255c;
 }
 
 .filter-button.selected::before {
@@ -1128,13 +1134,129 @@ button.danger:hover {
 }
 
 .filter-button.selected .filter-count {
-    color: #d6336c;
+    color: #c2255c;
     background-color: #ffffff;
 }
 
 .saved-count {
     font-weight: bold;
     color: #495057;
+}
+
+/* =========================================
+   11주차: 접근성
+   ========================================= */
+
+/* 화면에는 숨기고 스크린리더에는 읽히는 글자 */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 본문 바로가기: Tab을 처음 누르면 나타남 */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    z-index: 100;
+    padding: 10px 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #212529;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* 키보드 초점 표시: 모든 조작 요소에 두꺼운 테두리 + 간격 */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #1c7ed6;
+    outline-offset: 2px;
+}
+
+/* 라디오·체크박스는 감싼 카드 전체에 초점 표시 */
+label.choice:has(input:focus-visible),
+#notify-form label.option:has(input:focus-visible) {
+    outline: 3px solid #1c7ed6;
+    outline-offset: 2px;
+}
+
+/* 프로그램이 초점을 옮긴 제목은 테두리 대신 살짝 표시 */
+h2[tabindex="-1"]:focus,
+h3[tabindex="-1"]:focus,
+p[tabindex="-1"]:focus {
+    outline: none;
+}
+
+h3[tabindex="-1"]:focus-visible {
+    outline: 3px solid #1c7ed6;
+    outline-offset: 4px;
+}
+
+main {
+    display: block;
+}
+
+/* 단계 제목 등 h3 기본 여백 정리 */
+h3.step-title {
+    padding: 0;
+    border: none;
+}
+
+/* 6주차 탭: 선택 탭은 색 + 밑줄 + 굵게 (색이 아니어도 구분) */
+.tab-button.active {
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+/* 상담 '관계 상황' 묶음 (fieldset + legend) */
+#consult fieldset.field {
+    margin: 0 0 18px;
+    padding: 0;
+    border: none;
+}
+
+#consult legend {
+    margin: 0 0 8px;
+    padding: 0;
+    font-weight: bold;
+    color: #222222;
+}
+
+/* 앱 화면 이미지 + 설명 */
+.app-preview {
+    margin: 0;
+    text-align: center;
+}
+
+.app-preview figcaption {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #5c636a;
+}
+
+/* 움직임 줄이기 설정을 켠 사용자는 부드러운 스크롤 끔 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
 }
 
 /* =========================================
@@ -1156,14 +1278,14 @@ button.danger:hover {
         margin: 0;
         padding: 8px 14px;
         font-size: 15px;
-        color: #d6336c;
+        color: #c2255c;
         background-color: #fff0f3;
-        border: 1px solid #f4a6b8;
+        border: 1px solid #c2255c;
     }
 
     .menu-toggle:hover {
         color: #ffffff;
-        background-color: #d6336c;
+        background-color: #c2255c;
     }
 
     .menu-icon {
@@ -1207,7 +1329,7 @@ button.danger:hover {
         font-size: 16px;
     }
 
-    h3 {
+    h2 {
         font-size: 19px;
     }
 
