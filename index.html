@@ -15,18 +15,34 @@
         페이지 목적: Amor AI가 어떤 서비스인지 소개하고, 답장 상담을 직접 체험하게 하는 것
         핵심 행동: 고민을 입력해 추천 답장을 받고, 보관함에 저장해 다시 꺼내 쓰기
         정보 순서: 서비스 소개 -> 주요 기능 -> 기능 자세히 보기 -> AI 답장 상담 -> 내 답장 보관함 -> 이용 방법 -> 소식 알림 신청
-        이동 흐름: 상단 메뉴 클릭 시 같은 페이지 내 해당 섹션으로 스크롤 이동
+        이동 흐름: 상단 메뉴 클릭 시 같은 페이지 내 해당 섹션으로 이동, 현재 보고 있는 영역의 메뉴를 강조 (10주차)
     -->
 
     <!-- 내부 이동 메뉴 -->
-    <nav>
-        <a href="#about">서비스 소개</a> |
-        <a href="#features">주요 기능</a> |
-        <a href="#consult">AI 상담</a> |
-        <a href="#saved">보관함</a> |
-        <a href="#howto">이용 방법</a> |
-        <a href="#signup">알림 신청</a>
-    </nav>
+    <!--
+        10주차: 주요 메뉴 (nav > ul > li)
+        - 지금 보고 있는 영역의 메뉴를 강조하고 aria-current="location" 표시
+        - 768px 이하에서는 "메뉴 열기" 버튼으로 펼치고 접음 (aria-expanded 연동)
+    -->
+    <header class="site-header" id="site-header">
+        <div class="header-bar">
+            <a class="brand" href="#about">💗 Amor AI</a>
+            <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="main-menu">
+                <span class="menu-icon" aria-hidden="true">☰</span>
+                <span class="menu-toggle-text">메뉴 열기</span>
+            </button>
+        </div>
+        <nav class="main-nav" aria-label="주요 메뉴">
+            <ul class="menu" id="main-menu">
+                <li><a href="#about">서비스 소개</a></li>
+                <li><a href="#features">주요 기능</a></li>
+                <li><a href="#consult">AI 답장 상담</a></li>
+                <li><a href="#saved">내 답장 보관함</a></li>
+                <li><a href="#howto">이용 방법</a></li>
+                <li><a href="#signup">소식 알림 신청</a></li>
+            </ul>
+        </nav>
+    </header>
 
     <!-- 서비스 이름 및 한 줄 소개 -->
     <section id="about">
@@ -221,18 +237,20 @@
                 <label for="saved-search">키워드로 찾기</label>
                 <input type="text" id="saved-search" placeholder="메모·고민·답장 내용 검색">
             </div>
-            <div class="saved-tool">
-                <label for="saved-filter">관계 상황</label>
-                <select id="saved-filter">
-                    <option value="all">전체</option>
-                    <option value="some">썸 타는 중</option>
-                    <option value="dating">연애 중</option>
-                    <option value="fight">다툰 후</option>
-                </select>
+        </div>
+
+        <!-- 10주차: 관계 상황 필터 버튼 (aria-pressed로 선택 상태 표시) -->
+        <div class="filter-group" role="group" aria-labelledby="filter-label">
+            <p class="filter-label" id="filter-label">관계 상황으로 골라 보기</p>
+            <div class="filter-buttons">
+                <button type="button" class="filter-button" data-filter="all" aria-pressed="true">전체 <span class="filter-count">0</span></button>
+                <button type="button" class="filter-button" data-filter="some" aria-pressed="false">썸 타는 중 <span class="filter-count">0</span></button>
+                <button type="button" class="filter-button" data-filter="dating" aria-pressed="false">연애 중 <span class="filter-count">0</span></button>
+                <button type="button" class="filter-button" data-filter="fight" aria-pressed="false">다툰 후 <span class="filter-count">0</span></button>
             </div>
         </div>
 
-        <p class="saved-count" id="saved-count"></p>
+        <p class="saved-count" id="saved-count" aria-live="polite"></p>
 
         <div class="undo-bar" id="undo-bar" hidden>
             <span id="undo-text"></span>

@@ -6,6 +6,7 @@
 // 7주차: AI 답장 상담 흐름 (시작 → 입력 → 선택 → 확인 → 완료)
 // 중간고사: 내 답장 보관함 (저장 → 찾기 → 열기·다시 상담 → 삭제·되돌리기)
 // 9주차: 소식 알림 신청 폼 (조건부 입력, 실시간 검증, 제출 상태) + 답장 복사
+// 10주차: 현재 위치 메뉴(aria-current), 모바일 메뉴(aria-expanded), 보관함 필터 버튼(aria-pressed)
 // =========================================
 
 
@@ -322,7 +323,8 @@ const saveFeedback = document.querySelector("#save-feedback");
 
 const savedCount = document.querySelector("#saved-count");
 const savedSearch = document.querySelector("#saved-search");
-const savedFilter = document.querySelector("#saved-filter");
+const filterButtons = document.querySelectorAll(".filter-button");
+let currentFilter = "all"; // 10주차: 선택한 관계 상황 필터
 const savedList = document.querySelector("#saved-list");
 const savedEmpty = document.querySelector("#saved-empty");
 const savedEmptyText = document.querySelector("#saved-empty-text");
@@ -435,7 +437,7 @@ function handleSave() {
 // ---- 보관함 목록: 찾기 ----
 function getFilteredReplies() {
     const keyword = savedSearch.value.trim().toLowerCase();
-    const relation = savedFilter.value;
+    const relation = currentFilter;
 
     return savedReplies.filter(function (item) {
         const matchRelation = relation === "all" || item.relation === relation;
@@ -456,20 +458,29 @@ function renderSaved() {
     const list = getFilteredReplies();
     savedList.innerHTML = "";
 
+    updateFilterButtons();
+    const filterName = currentFilter === "all" ? "전체" : "'" + relationLabels[currentFilter] + "'";
+
     if (savedReplies.length === 0) {
+        // 경우 1: 보관함 자체가 비어 있음
         savedCount.textContent = "보관된 답장 0개";
         showEmpty("아직 저장한 답장이 없어요. 위의 AI 답장 상담을 끝까지 진행한 뒤 '보관함에 저장'을 눌러 보세요.",
             "상담하러 가기", "consult");
     } else if (list.length === 0) {
-        savedCount.textContent = "전체 " + savedReplies.length + "개 중 0개 표시";
-        const conditions = [];
+        // 경우 2: 답장은 있지만 선택한 조건에 맞는 것만 없음
+        savedCount.textContent = filterName + " 답장 0개 표시 (전체 " + savedReplies.length + "개 보관 중)";
         const keyword = savedSearch.value.trim();
-        if (keyword !== "") conditions.push("'" + keyword + "'");
-        if (savedFilter.value !== "all") conditions.push(relationLabels[savedFilter.value]);
-        showEmpty(conditions.join(" · ") + " 조건에 맞는 답장이 없어요. 다른 키워드를 입력하거나 관계 상황을 '전체'로 바꿔 보세요.",
-            "검색 조건 초기화", "reset");
+        let text;
+        if (keyword !== "" && currentFilter !== "all") {
+            text = filterName + " 답장 중 '" + keyword + "'이(가) 들어간 답장이 없어요. 키워드를 바꾸거나 '전체'를 눌러 보세요.";
+        } else if (keyword !== "") {
+            text = "'" + keyword + "'이(가) 들어간 답장이 없어요. 다른 키워드로 찾아 보세요.";
+        } else {
+            text = filterName + " 상황으로 저장한 답장은 아직 없어요. 다른 상황을 고르거나, 이 상황으로 상담을 받아 저장해 보세요.";
+        }
+        showEmpty(text, "전체 답장 보기", "reset");
     } else {
-        savedCount.textContent = "전체 " + savedReplies.length + "개 중 " + list.length + "개 표시";
+        savedCount.textContent = filterName + " 답장 " + list.length + "개 표시 (전체 " + savedReplies.length + "개 보관 중)";
         savedEmpty.hidden = true;
         list.forEach(function (item) {
             savedList.appendChild(createCard(item));
@@ -608,12 +619,32 @@ memoInput.addEventListener("input", function () {
 });
 
 savedSearch.addEventListener("input", renderSaved);
-savedFilter.addEventListener("change", renderSaved);
+
+// 10주차: 필터 버튼 - 선택 표시(aria-pressed)와 목록을 함께 갱신
+function updateFilterButtons() {
+    filterButtons.forEach(function (button) {
+        const value = button.dataset.filter;
+        const count = value === "all"
+            ? savedReplies.length
+            : savedReplies.filter(function (item) { return item.relation === value; }).length;
+        button.querySelector(".filter-count").textContent = count;
+        const selected = value === currentFilter;
+        button.setAttribute("aria-pressed", selected ? "true" : "false");
+        button.classList.toggle("selected", selected);
+    });
+}
+
+filterButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+        currentFilter = button.dataset.filter;
+        renderSaved();
+    });
+});
 
 savedEmptyAction.addEventListener("click", function () {
     if (savedEmptyAction.dataset.action === "reset") {
         savedSearch.value = "";
-        savedFilter.value = "all";
+        currentFilter = "all";
         renderSaved();
         savedSearch.focus();
     } else {
@@ -1079,7 +1110,8 @@ notifyForm.addEventListener("reset", function () {
 document.querySelector("#btn-notify-new").addEventListener("click", function () {
     notifyDone.hidden = true;
     notifyForm.hidden = false;
-    notifyForm.reset();
+    notifyForm.reset();   // 값은 바로 비워지므로
+    afterReset();         // 안내 문구·버튼·문자 영역도 바로 초기화
     fields.name.el.focus();
 });
 
@@ -1098,3 +1130,120 @@ document.querySelector("#btn-notify-edit").addEventListener("click", function ()
 
 updateSmsArea();
 Object.keys(fields).forEach(renderField);
+
+
+
+// -----------------------------------------
+// 10주차: 주요 메뉴 - 현재 위치 표시 + 모바일 메뉴
+// -----------------------------------------
+const siteHeader = document.querySelector("#site-header");
+const menuToggle = document.querySelector("#menu-toggle");
+const menuToggleText = menuToggle.querySelector(".menu-toggle-text");
+const menuIcon = menuToggle.querySelector(".menu-icon");
+const menuLinks = document.querySelectorAll(".menu a");
+const mobileQuery = window.matchMedia("(max-width: 768px)");
+
+// 메뉴가 가리키는 영역들 (페이지 위에서부터 순서대로)
+const menuTargets = Array.prototype.map.call(menuLinks, function (link) {
+    return { link: link, section: document.querySelector(link.getAttribute("href")) };
+});
+
+// 현재 메뉴 표시: 강조 클래스 + aria-current는 한 메뉴에만
+function setCurrentMenu(id) {
+    menuTargets.forEach(function (target) {
+        const isCurrent = target.section.id === id;
+        target.link.classList.toggle("current", isCurrent);
+        if (isCurrent) {
+            target.link.setAttribute("aria-current", "location");
+        } else {
+            target.link.removeAttribute("aria-current");
+        }
+    });
+}
+
+// 실제 스크롤 위치로 지금 보고 있는 영역 계산
+// (메뉴 아래 기준선을 지난 마지막 영역, 페이지 맨 아래면 마지막 메뉴)
+function findCurrentSection() {
+    const line = siteHeader.getBoundingClientRect().bottom + 24;
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    if (atBottom) return menuTargets[menuTargets.length - 1].section.id;
+
+    let current = menuTargets[0].section.id;
+    menuTargets.forEach(function (target) {
+        if (target.section.getBoundingClientRect().top <= line) {
+            current = target.section.id;
+        }
+    });
+    return current;
+}
+
+let spyFrame = null;
+function updateCurrentMenu() {
+    if (spyFrame !== null) return;
+    spyFrame = requestAnimationFrame(function () {
+        spyFrame = null;
+        setCurrentMenu(findCurrentSection());
+    });
+}
+
+// 고정 메뉴 높이만큼 이동 위치 여유 주기 (CSS 변수 --header-height)
+function updateHeaderHeight() {
+    const bar = siteHeader.querySelector(".header-bar");
+    const height = mobileQuery.matches ? bar.offsetHeight + 16 : siteHeader.offsetHeight;
+    document.documentElement.style.setProperty("--header-height", height + "px");
+}
+
+window.addEventListener("scroll", updateCurrentMenu, { passive: true });
+window.addEventListener("resize", function () {
+    updateHeaderHeight();
+    updateCurrentMenu();
+});
+// 뒤로 가기·앞으로 가기로 주소의 #이 바뀌면 이동한 위치 기준으로 다시 계산
+window.addEventListener("hashchange", updateCurrentMenu);
+window.addEventListener("popstate", updateCurrentMenu);
+// 새로고침 후 브라우저가 스크롤 위치를 되돌린 다음에도 다시 계산
+window.addEventListener("load", function () {
+    updateCurrentMenu();
+    setTimeout(updateCurrentMenu, 100);
+});
+
+// 모바일 메뉴 열기·닫기: 실제 표시 상태 + 버튼 문구 + aria-expanded를 함께 변경
+function setMenuOpen(open) {
+    siteHeader.classList.toggle("menu-open", open);
+    menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    menuToggleText.textContent = open ? "메뉴 닫기" : "메뉴 열기";
+    menuIcon.textContent = open ? "✕" : "☰";
+}
+
+menuToggle.addEventListener("click", function () {
+    const open = menuToggle.getAttribute("aria-expanded") !== "true";
+    setMenuOpen(open);
+    if (open) menuLinks[0].focus();
+});
+
+// 목적지를 고르면 현재 메뉴를 바로 표시하고, 모바일에서는 메뉴 닫기
+menuLinks.forEach(function (link) {
+    link.addEventListener("click", function () {
+        setCurrentMenu(link.getAttribute("href").slice(1));
+        if (mobileQuery.matches) setMenuOpen(false);
+        setTimeout(updateCurrentMenu, 50);
+    });
+});
+
+// Esc로 닫기
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
+        setMenuOpen(false);
+        menuToggle.focus();
+    }
+});
+
+// 넓은 화면으로 바뀌면 모바일 메뉴 상태 초기화 (넓은 화면은 항상 메뉴 표시)
+mobileQuery.addEventListener("change", function () {
+    setMenuOpen(false);
+    updateCurrentMenu();
+});
+
+setMenuOpen(false);
+updateHeaderHeight();
+setCurrentMenu(findCurrentSection());

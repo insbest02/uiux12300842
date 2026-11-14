@@ -1,6 +1,6 @@
 /* =========================================
    Amor AI - CSS
-   3주차 디자인 / 4주차 반응형 / 5·6·7주차·중간고사·9주차 기능 스타일
+   3주차 디자인 / 4주차 반응형 / 5·6·7·9·10주차·중간고사 기능 스타일
    ========================================= */
 
 /* 4주차: 패딩·테두리를 너비 안에 포함시켜 가로 넘침 방지 */
@@ -19,29 +19,91 @@ body {
     background-color: #fff5f7;
 }
 
-/* 상단 메뉴: 배경색 + 아래 테두리로 영역 구분 */
-nav {
+/* =========================================
+   상단 메뉴 (10주차: nav > ul > li, 현재 위치 표시, 모바일 메뉴)
+   ========================================= */
+.site-header {
     position: sticky;
     top: 0;
-    z-index: 10;
-    padding: 16px 24px;
-    text-align: center;
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 10px 24px;
     background-color: #ffffff;
     border-bottom: 2px solid #f4a6b8;
-    color: #cccccc;
 }
 
-nav a {
-    margin: 0 10px;
-    font-size: 15px;
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.brand {
+    font-size: 18px;
     font-weight: bold;
     color: #d6336c;
     text-decoration: none;
+    white-space: nowrap;
 }
 
-nav a:hover {
-    color: #a61e4d;
-    text-decoration: underline;
+/* 넓은 화면에서는 메뉴 열기 버튼 숨김 */
+.menu-toggle {
+    display: none;
+}
+
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #868e96;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 999px;
+}
+
+.menu a:hover {
+    color: #d6336c;
+    background-color: #fff0f3;
+}
+
+.menu a:focus-visible,
+.menu-toggle:focus-visible,
+.filter-button:focus-visible {
+    outline: 3px solid #f783ac;
+    outline-offset: 2px;
+}
+
+/* 현재 위치 메뉴: 배경색 + 글자색 + 앞 점 표시로 구분 */
+.menu a.current {
+    color: #ffffff;
+    background-color: #d6336c;
+}
+
+.menu a.current::before {
+    content: "● ";
+    font-size: 10px;
+    vertical-align: middle;
+}
+
+/* 메뉴로 이동했을 때 고정 메뉴에 가리지 않도록 */
+:root {
+    --header-height: 72px;
 }
 
 /* 각 영역(section)을 카드처럼 - 유동 너비 + 최대 너비 */
@@ -545,7 +607,7 @@ button.secondary:hover {
 /* 고정 메뉴에 가리지 않도록 스크롤 위치 여유 */
 section,
 .saved-detail {
-    scroll-margin-top: 80px;
+    scroll-margin-top: calc(var(--header-height) + 12px);
 }
 
 /* 완료 화면의 저장 영역 */
@@ -1007,24 +1069,128 @@ button.danger:hover {
 }
 
 /* =========================================
+   10주차: 보관함 필터 버튼
+   ========================================= */
+.filter-group {
+    margin-top: 16px;
+}
+
+.filter-label {
+    margin: 0 0 8px;
+    font-weight: bold;
+    color: #222222;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-button {
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 999px;
+}
+
+.filter-button:hover {
+    color: #d6336c;
+    background-color: #fff0f3;
+    border-color: #f4a6b8;
+}
+
+/* 선택한 필터: 배경색 + 체크 표시로 구분 */
+.filter-button.selected,
+.filter-button.selected:hover {
+    color: #ffffff;
+    background-color: #d6336c;
+    border-color: #d6336c;
+}
+
+.filter-button.selected::before {
+    content: "✓ ";
+}
+
+.filter-count {
+    display: inline-block;
+    min-width: 22px;
+    margin-left: 2px;
+    padding: 0 6px;
+    font-size: 12px;
+    text-align: center;
+    color: #495057;
+    background-color: #f1f3f5;
+    border-radius: 999px;
+}
+
+.filter-button.selected .filter-count {
+    color: #d6336c;
+    background-color: #ffffff;
+}
+
+.saved-count {
+    font-weight: bold;
+    color: #495057;
+}
+
+/* =========================================
    4주차: 768px 이하 (태블릿·모바일)
    ========================================= */
 @media (max-width: 768px) {
 
-    /* 내비게이션 세로 배치 + 모바일에서는 고정 해제 */
-    nav {
-        position: static;
-        display: flex;
-        flex-direction: column;
+    /* 10주차: 모바일 메뉴 - 버튼으로 열고 닫기 */
+    .site-header {
+        display: block;
         padding: 8px 16px;
-        font-size: 0;
     }
 
-    nav a {
-        display: block;
+    .menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: auto;
         margin: 0;
-        padding: 8px 0;
+        padding: 8px 14px;
         font-size: 15px;
+        color: #d6336c;
+        background-color: #fff0f3;
+        border: 1px solid #f4a6b8;
+    }
+
+    .menu-toggle:hover {
+        color: #ffffff;
+        background-color: #d6336c;
+    }
+
+    .menu-icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    /* 닫힌 상태: 메뉴 숨김 / 열린 상태: 세로 목록으로 표시 */
+    .main-nav {
+        display: none;
+    }
+
+    .site-header.menu-open .main-nav {
+        display: block;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f8d0da;
+    }
+
+    .menu {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .menu a {
+        padding: 12px 14px;
+        border-radius: 8px;
     }
 
     section {
@@ -1151,5 +1317,15 @@ button.danger:hover {
 
     .copy-row .copy-button {
         width: auto;
+    }
+
+    /* 10주차: 필터 버튼 모바일 - 두 줄 배치 */
+    .filter-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-button {
+        width: 100%;
     }
 }
